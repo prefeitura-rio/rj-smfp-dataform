@@ -1,18 +1,19 @@
+-- Defina um modelo SQLX para a fonte filtrada.
 config {
-  type: "declaration",
-  schema: "dataform_sources"
+  name:"fita_banco_filtered",
+  type:"declaration",
+  schema:"recursos_humanos_ergon_dashboards_sources",
+  description:"Fonte filtrada para o ano de 2023."
 }
 
--- @name Modelo da Tabela Source com Filtro de Partições após 2023
--- @description Modelo que filtra apenas as partições após 2023 na tabela `rj-smfp.recursos_humanos_ergon.fita_banco`.
-WITH filtro_por_particao AS (
-  SELECT *
-  FROM `rj-smfp.recursos_humanos_ergon.fita_banco`
-  WHERE data_particao >= '2023-08-01'
-)
- 
--- Defina a estrutura da tabela source com base no filtro de partição
+-- Consulta SQLX que filtra os dados para o ano de 2023 usando a coluna `data_particao`.
 SELECT
-  *
-FROM
-  filtro_por_particao;
+    data_folha,
+    EXTRACT(YEAR FROM data_folha) AS ano,
+    EXTRACT(MONTH FROM data_folha) AS mes,
+    id_funcao,
+    nome_fita_banco,
+    valor_liquido,
+    regime_juridico,
+FROM `rj-smfp.recursos_humanos_ergon.fita_banco`
+WHERE data_particao > '2023-01-01'

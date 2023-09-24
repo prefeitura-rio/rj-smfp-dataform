@@ -1,0 +1,22 @@
+config {
+  type: "table", 
+  name: "pagamentos_categoria",
+  schema: "dashboard_test",
+  description: "Exibe a distribuição dos pagamentos por categoria de vínculo a partir da fonte filtrada `fita_banco_filtered`.",
+  columns: {
+    categoria: "Categoria", 
+  }
+}
+
+WITH distribuicao_pagamentos_por_categoria AS (
+  SELECT
+    categoria,
+    SUM(valor_liquido) AS total_pagamento
+  FROM ${ref("fita_banco_filtered")}
+  GROUP BY
+    categoria
+)
+SELECT
+  *
+FROM
+  distribuicao_pagamentos_por_categoria;

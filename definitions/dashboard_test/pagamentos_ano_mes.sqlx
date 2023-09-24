@@ -1,0 +1,23 @@
+config {
+  type: "table", 
+  name: "pagamentos_ano_mes",
+  schema: "dashboard_test",
+  description: "Exibe o valor total de pagamentos feitos a cada ano e mês a partir da fonte filtrada `fita_banco_filtered",
+  columns: {
+    ano: "A description for the test column", 
+  }
+}
+
+WITH resumo_pagamentos_por_ano_mes AS (
+  SELECT
+    EXTRACT(YEAR FROM data_folha) AS ano,
+    EXTRACT(MONTH FROM data_folha) AS mes,
+    SUM(valor_liquido) AS total_pagamento
+  FROM ${ref("fita_banco_filtered")}
+  GROUP BY
+    ano, mes
+)
+SELECT
+  *
+FROM
+  resumo_pagamentos_por_ano_mes;

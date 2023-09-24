@@ -1,0 +1,27 @@
+
+config {
+  type: "table", 
+  name: "pagamentos_regime_juridico",
+  schema: "dashboard_test",
+  description: "Exibe o valor total de pagamentos por regime jurídico a partir da fonte filtrada `fita_banco_filtered`",
+  columns: {
+    regime_juridico: "Regime jurídico", 
+  }
+}
+
+
+WITH resumo_pagamentos_por_regime AS (
+  SELECT
+    EXTRACT(YEAR FROM data_folha) AS ano,
+    regime_juridico,
+    SUM(valor_liquido) AS total_pagamento
+  FROM ${ref("fita_banco_filtered")}
+  GROUP BY
+    ano, regime_juridico
+  ORDER BY
+    ano, regime_juridico
+)
+SELECT
+  *
+FROM
+  resumo_pagamentos_por_regime;
