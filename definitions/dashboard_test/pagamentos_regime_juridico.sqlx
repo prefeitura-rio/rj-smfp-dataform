@@ -24,4 +24,4 @@ WITH resumo_pagamentos_por_regime AS (
 SELECT
   *
 FROM
-  resumo_pagamentos_por_regime;
+  resumo_pagamentos_por_regime

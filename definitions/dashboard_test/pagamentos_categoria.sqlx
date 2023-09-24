@@ -19,4 +19,4 @@ WITH distribuicao_pagamentos_por_categoria AS (
 SELECT
   *
 FROM
-  distribuicao_pagamentos_por_categoria;
+  distribuicao_pagamentos_por_categoria

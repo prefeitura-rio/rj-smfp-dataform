@@ -20,4 +20,4 @@ WITH resumo_pagamentos_por_ano_mes AS (
 SELECT
   *
 FROM
-  resumo_pagamentos_por_ano_mes;
+  resumo_pagamentos_por_ano_mes
