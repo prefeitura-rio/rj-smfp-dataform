@@ -1,8 +1,8 @@
 -- Defina um modelo SQLX para a fonte filtrada.
 config {
+  type:"table",
   name:"fita_banco_filtered",
-  type:"declaration",
-  schema:"recursos_humanos_ergon_dashboards_sources",
+  schema:"dashboard_test",
   description:"Fonte filtrada para o ano de 2023."
 }
 
