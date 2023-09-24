@@ -11,9 +11,9 @@ SELECT
     data_folha,
     EXTRACT(YEAR FROM data_folha) AS ano,
     EXTRACT(MONTH FROM data_folha) AS mes,
-    id_funcao,
-    nome_fita_banco,
-    valor_liquido,
+    categoria,
     regime_juridico,
+    valor_liquido,
 FROM `rj-smfp.recursos_humanos_ergon.fita_banco`
-WHERE data_particao > '2023-01-01'
+WHERE data_particao >= '2023-01-01'
+ORDER BY data_particao
