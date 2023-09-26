@@ -1,0 +1,13 @@
+config {
+   type: "table",
+   name: "org_sociais_agregada",
+   schema: "dashboard_ergon_folha_subggc",
+   description: "Folha adm publica agregada."
+
+}
+
+SELECT 
+* except(numdepen,numpens,setor)
+
+FROM ${ref('toda_adm_publica_agregada')}
+WHERE EMP_CODIGO >= '80'

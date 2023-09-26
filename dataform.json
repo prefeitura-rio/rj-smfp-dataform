@@ -2,7 +2,7 @@
   "defaultSchema": "dataform",
   "assertionSchema": "dataform_assertions",
   "warehouse": "bigquery",
-  "defaultDatabase": "rj-smfp",
+  "defaultDatabase": "rj-smfp-dev",
   "defaultLocation": "US"
 }
     
