@@ -2,7 +2,7 @@
 config {
   type: "table", 
   name: "pagamentos_regime_juridico",
-  schema: "dashboard_test",
+  schema: "dashboard_ergon_subgcc",
   description: "Exibe o valor total de pagamentos por regime jurídico a partir da fonte filtrada `fita_banco_filtered`",
   columns: {
     regime_juridico: "Regime jurídico", 

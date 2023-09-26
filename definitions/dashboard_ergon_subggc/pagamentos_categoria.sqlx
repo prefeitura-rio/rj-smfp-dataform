@@ -1,7 +1,7 @@
 config {
   type: "table", 
   name: "pagamentos_categoria",
-  schema: "dashboard_test",
+  schema: "dashboard_ergon_subgcc",
   description: "Exibe a distribuição dos pagamentos por categoria de vínculo a partir da fonte filtrada `fita_banco_filtered`.",
   columns: {
     categoria: "Categoria", 

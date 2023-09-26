@@ -2,8 +2,11 @@
 config {
   type:"table",
   name:"fita_banco_filtered",
-  schema:"dashboard_test",
-  description:"Fonte filtrada para o ano de 2023."
+  schema:"dashboard_ergon_subgcc",
+  description:"Fonte filtrada para o ano de 2023.",
+  columns:{
+    data_folha: "Data da folha"
+  }
 }
 
 -- Consulta SQLX que filtra os dados para o ano de 2023 usando a coluna `data_particao`.

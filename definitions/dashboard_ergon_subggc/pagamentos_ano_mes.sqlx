@@ -1,7 +1,7 @@
 config {
   type: "table", 
   name: "pagamentos_ano_mes",
-  schema: "dashboard_test",
+  schema: "dashboard_ergon_subgcc",
   description: "Exibe o valor total de pagamentos feitos a cada ano e mês a partir da fonte filtrada `fita_banco_filtered",
   columns: {
     ano: "A description for the test column", 
