@@ -69,7 +69,7 @@ ON S.SETOR = P.SETOR AND S.EMP_CODIGO = V.EMP_CODIGO AND S.DATAFIM IS NULL
 
 
 SELECT 
-
+  distinct 
   regimejur as REGIME_JURIDICO, categoria as CATEGORIA, emp_codigo as EMP_CODIGO,sexo AS SEXO, --idade AS IDADE
   CASE
 	WHEN idade<=25 THEN 'Até 25 anos'
