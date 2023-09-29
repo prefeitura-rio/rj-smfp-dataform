@@ -6,8 +6,139 @@ config {
 
 }
 
+/*
+with OS as (
 SELECT 
-* except(numdepen,numpens,setor)
+* except(numdepen,numpens,setor, VALOR_DESVANTAGEM, VALOR_DESVANTAGEM, VALOR_LIQUIDO)
 
 FROM ${ref('toda_adm_publica_agregada')}
 WHERE EMP_CODIGO >= '80'
+)
+*/
+
+
+with TODA_ADM_PUBLICA_OS AS (
+SELECT 
+
+  V.numfunc, 
+  V.numero, 
+  V.regimejur,
+  V.categoria,
+  V.emp_codigo,
+  S.SIGLA_SEC as orgao,
+  EMPRE.ENTES_ADMINISTRATIVOS, 
+  EMPRE.MACRO_CATEGORIA,
+  EMPRE.FANTASIA,
+  --V.dtvac,
+  FC.sexo,
+  DATE_DIFF(CURRENT_DATE(), DATE(FC.dtnasc), YEAR) AS idade,
+  C.NOME AS NOME_CARGO ,
+  FG.FG_NOME AS FUNCAO_GRATIFICADA,
+  fita_banco.mes_ano, 
+  CAST(fita_banco.valorvan AS float64) AS valorvan,
+  CAST(fita_banco.valordes AS float64) AS valordes, 
+  CAST(fita_banco.valorliq AS float64) AS valorliq,
+  fita_banco.numdepen,
+  fita_banco.numpens, 
+  fita_banco.setor
+
+FROM `rj-smfp.recursos_humanos_ergon_staging.vinculo` V
+
+LEFT JOIN `rj-smfp.recursos_humanos_ergon_staging.funcionario` FC ON V.NUMFUNC = FC.NUMERO
+
+LEFT JOIN `rj-smfp.recursos_humanos_ergon_staging.provimento` P	ON V.NUMFUNC = P.NUMFUNC AND V.NUMERO = P.NUMVINC AND P.EMP_CODIGO = V.EMP_CODIGO
+
+LEFT JOIN `rj-smfp.recursos_humanos_ergon_staging.cargo` C ON C.CARGO = P.CARGO
+
+LEFT JOIN `rj-smfp.recursos_humanos_ergon_staging.fita_banco` fita_banco ON fita_banco.numfunc = V.numfunc and fita_banco.numvinc = V.numero and fita_banco.data_particao>='2021-01-01' 
+
+-- O regex foi utilizado para remover os '.' e todo valor após ele
+LEFT JOIN `rj-smfp.dashboard_ergon_folha_subggc.funcao_gratificada_codigos` FG ON CAST(FG.FG_CODIGO AS STRING) = CAST(REGEXP_REPLACE(CAST(fita_banco.funcao AS STRING), r'\..*', '') AS STRING)
+
+LEFT JOIN `rj-smfp.recursos_humanos_ergon.dTb_empresas` EMPRE ON CAST(EMPRE.EMPRESA AS INT64) = CAST(V.EMP_CODIGO AS INT64)
+
+LEFT JOIN 
+(
+select 
+    S.FLEX_CAMPO_05 AS CODIGO_SEC,
+    S.NOMESETOR AS NOME_SETOR,
+    S.FLEX_CAMPO_01 AS SIGLA_SETOR,
+    S1.FLEX_CAMPO_01 AS SIGLA_SEC, 
+    S.SETOR,
+    S.emp_codigo,
+    S.datafim
+from  `rj-smfp.recursos_humanos_ergon_staging.setor` S
+INNER JOIN `rj-smfp.recursos_humanos_ergon_staging.setor` S1
+ON
+S.FLEX_CAMPO_05 = S1.SETOR AND S1.DATAFIM IS NULL AND S1.EMP_CODIGO = S.EMP_CODIGO
+) S
+ON S.SETOR = P.SETOR AND S.EMP_CODIGO = V.EMP_CODIGO AND S.DATAFIM IS NULL 
+
+WHERE  CAST(V.EMP_CODIGO AS INT64) >=80
+),
+
+fitabanco_orgSociais_acima2021 as (
+    select 
+    distinct 
+     safe_cast(data_folha as DATE) data_folha
+    ,safe_cast(id_funcionario as STRING) id_funcao
+    ,sum(safe_cast(valor as FLOAT64)) valor_bruto
+    ,safe_cast(id_empresa as INT64) id_empresa
+  from
+    `rj-smfp.recursos_humanos_ergon.ficha_financeira_contabil`  ffc
+  join
+    (
+      select cast(id_empresa as INT64) empresa,nome_empresa 
+      from `rj-smfp.recursos_humanos_ergon.empresas` 
+      order by cast(id_empresa as INT64)
+    )sel1
+    on
+      safe_cast(ffc.id_empresa as INT64) = sel1.empresa
+  where
+        extract(year from safe_cast(data_folha as date)) >= 2021
+    and sel1.empresa >= 80
+    and descricao_vantagem = '1'
+  group by
+     id_empresa
+    ,data_folha
+    ,id_funcao
+  order by 
+    data_folha
+    ,id_empresa 
+),
+
+juntando as (
+SELECT 
+
+A.* except(numdepen,numpens,setor, valordes, valorvan, valorliq, mes_ano),
+B.data_folha as mes_ano, 
+B.valor_bruto
+
+
+FROM TODA_ADM_PUBLICA_OS A 
+LEFT JOIN fitabanco_orgSociais_acima2021 B ON A.numfunc = B.id_funcao
+where data_folha is not null
+)
+
+select 
+
+  regimejur as REGIME_JURIDICO, categoria as CATEGORIA, emp_codigo as EMP_CODIGO,sexo AS SEXO, --idade AS IDADE
+  CASE
+	WHEN idade<=25 THEN 'Até 25 anos'
+    WHEN idade>26 AND idade<=40 THEN 'De 26 a 40 anos'
+    WHEN idade>40 AND idade<=55 THEN 'De 40 a 55 anos'
+    WHEN idade>55 AND idade<=70 THEN 'De 55 a 70 anos'
+    WHEN idade>70 THEN 'Mais de 70 anos'
+    ELSE 'Não informado'
+  END AS IDADE
+  
+  ,
+  NOME_CARGO,FUNCAO_GRATIFICADA, mes_ano AS MES_ANO, 
+  ENTES_ADMINISTRATIVOS, 
+  MACRO_CATEGORIA,
+  FANTASIA,
+  orgao,
+  SUM(valor_bruto) AS valor_bruto, 
+
+from juntando
+group by 1,2,3,4,5,6,7,8,9,10,11,12

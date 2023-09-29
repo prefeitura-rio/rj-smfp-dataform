@@ -10,5 +10,5 @@ select
 * except(numdepen,numpens,setor)
 
 FROM ${ref('toda_adm_publica_agregada')}
-WHERE emp_codigo in ('2', '4' ) and numdepen is null and numpens is null and setor != 'SEM LOTACAO'
+WHERE cast(emp_codigo as int64) in (2, 4 ) and numdepen is null and numpens is null and setor != 'SEM LOTACAO'
 and mes_ano is not null
