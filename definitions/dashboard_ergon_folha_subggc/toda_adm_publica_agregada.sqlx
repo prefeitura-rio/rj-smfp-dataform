@@ -50,6 +50,7 @@ LEFT JOIN `rj-smfp.recursos_humanos_ergon.dTb_empresas` EMPRE ON CAST(EMPRE.EMPR
 LEFT JOIN 
 (
 select 
+  distinct
     S.FLEX_CAMPO_05 AS CODIGO_SEC,
     S.NOMESETOR AS NOME_SETOR,
     S.FLEX_CAMPO_01 AS SIGLA_SETOR,
@@ -60,7 +61,8 @@ select
 from  `rj-smfp.recursos_humanos_ergon_staging.setor` S
 INNER JOIN `rj-smfp.recursos_humanos_ergon_staging.setor` S1
 ON
-S.FLEX_CAMPO_05 = S1.SETOR AND S1.DATAFIM IS NULL AND S1.EMP_CODIGO = S.EMP_CODIGO
+S.FLEX_CAMPO_05 = S1.SETOR --AND S1.DATAFIM IS NULL 
+AND S1.EMP_CODIGO = S.EMP_CODIGO
 ) S
 ON S.SETOR = P.SETOR AND S.EMP_CODIGO = V.EMP_CODIGO AND S.DATAFIM IS NULL
 )
