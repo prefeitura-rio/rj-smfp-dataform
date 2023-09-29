@@ -15,7 +15,7 @@ SELECT
   V.regimejur,
   V.categoria,
   V.emp_codigo,
-  --S.SIGLA_SEC,
+  S.SIGLA_SEC as orgao,
   EMPRE.ENTES_ADMINISTRATIVOS, 
   EMPRE.MACRO_CATEGORIA,
   EMPRE.FANTASIA,
@@ -88,9 +88,10 @@ SELECT
   ENTES_ADMINISTRATIVOS, 
   MACRO_CATEGORIA,
   FANTASIA,
+  orgao,
   SUM(valorvan) AS VALOR_VANTAGEM, 
   SUM(valordes) AS VALOR_DESVANTAGEM, 
   SUM(valorliq) AS VALOR_LIQUIDO
 
-FROM TODA_ADM_PUBLICA
-group by 1,2,3,4,5,6,7,8,9,10,11,12,13,14
+FROM TODA_ADM_PUBLICA where mes_ano is not null
+group by 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
