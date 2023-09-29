@@ -93,5 +93,5 @@ SELECT
   SUM(valordes) AS VALOR_DESVANTAGEM, 
   SUM(valorliq) AS VALOR_LIQUIDO
 
-FROM TODA_ADM_PUBLICA where mes_ano is not null
+FROM TODA_ADM_PUBLICA 
 group by 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15

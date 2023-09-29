@@ -10,4 +10,5 @@ config {
 SELECT 
 * except(numdepen,numpens,setor)
 FROM ${ref('toda_adm_publica_agregada')}
-WHERE numdepen IS NULL AND numpens IS NULL AND EMP_CODIGO = '1'
+WHERE numdepen IS NULL AND numpens IS NULL AND EMP_CODIGO = '1' and mes_ano is not null
+
