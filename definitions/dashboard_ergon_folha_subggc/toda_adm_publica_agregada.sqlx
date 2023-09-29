@@ -64,10 +64,6 @@ S.FLEX_CAMPO_05 = S1.SETOR AND S1.DATAFIM IS NULL AND S1.EMP_CODIGO = S.EMP_CODI
 ) S
 ON S.SETOR = P.SETOR AND S.EMP_CODIGO = V.EMP_CODIGO AND S.DATAFIM IS NULL
 )
-/*
--- Falta incluir rubricas (vantagens, descontos e totais)
--- Falta a disponibilidade da Fichas financeiras 
-*/
 
 
 SELECT 
@@ -82,7 +78,6 @@ SELECT
     ELSE 'Não informado'
   END AS IDADE
   
-  
   ,
   NOME_CARGO,FUNCAO_GRATIFICADA, mes_ano AS MES_ANO, numdepen,numpens,setor,
   ENTES_ADMINISTRATIVOS, 
@@ -95,3 +90,6 @@ SELECT
 
 FROM TODA_ADM_PUBLICA 
 group by 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
+
+
+
