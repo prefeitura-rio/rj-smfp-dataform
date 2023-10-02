@@ -30,7 +30,8 @@ SELECT
   CAST(fita_banco.valorliq AS float64) AS valorliq,
   fita_banco.numdepen,
   fita_banco.numpens, 
-  fita_banco.setor
+  fita_banco.setor,
+  teste.siglaTESTE
 
 FROM `rj-smfp.recursos_humanos_ergon_staging.vinculo` V
 
@@ -64,7 +65,8 @@ ON
 S.FLEX_CAMPO_05 = S1.SETOR --AND S1.DATAFIM IS NULL 
 AND S1.EMP_CODIGO = S.EMP_CODIGO
 ) S
-ON S.SETOR = P.SETOR AND S.EMP_CODIGO = V.EMP_CODIGO AND S.DATAFIM IS NULL
+ON S.SETOR = P.SETOR AND S.EMP_CODIGO = V.EMP_CODIGO --AND S.DATAFIM IS NULL
+
 )
 
 
@@ -78,9 +80,7 @@ SELECT
     WHEN idade>55 AND idade<=70 THEN 'De 55 a 70 anos'
     WHEN idade>70 THEN 'Mais de 70 anos'
     ELSE 'Não informado'
-  END AS IDADE
-  
-  ,
+  END AS IDADE,
   NOME_CARGO,FUNCAO_GRATIFICADA, mes_ano AS MES_ANO, numdepen,numpens,setor,
   ENTES_ADMINISTRATIVOS, 
   MACRO_CATEGORIA,
@@ -90,7 +90,7 @@ SELECT
   SUM(valordes) AS VALOR_DESVANTAGEM, 
   SUM(valorliq) AS VALOR_LIQUIDO
 
-FROM TODA_ADM_PUBLICA 
+FROM TODA_ADM_PUBLICA where orgao is null 
 group by 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
 
 

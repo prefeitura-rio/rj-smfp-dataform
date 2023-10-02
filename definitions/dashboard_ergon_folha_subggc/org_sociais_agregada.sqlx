@@ -1,22 +1,3 @@
-config {
-   type: "table",
-   name: "org_sociais_agregada",
-   schema: "dashboard_ergon_folha_subggc",
-   description: "Folha adm publica agregada."
-
-}
-
-/*
-with OS as (
-SELECT 
-* except(numdepen,numpens,setor, VALOR_DESVANTAGEM, VALOR_DESVANTAGEM, VALOR_LIQUIDO)
-
-FROM ${ref('toda_adm_publica_agregada')}
-WHERE EMP_CODIGO >= '80'
-)
-*/
-
-
 with TODA_ADM_PUBLICA_OS AS (
 SELECT 
 
@@ -81,11 +62,11 @@ fitabanco_orgSociais_acima2021 as (
     select 
     distinct 
      safe_cast(data_folha as DATE) data_folha
-    ,safe_cast(id_funcionario as STRING) id_funcao
+    ,safe_cast(numfunc as STRING) id_funcao
     ,sum(safe_cast(valor as FLOAT64)) valor_bruto
     ,safe_cast(id_empresa as INT64) id_empresa
-  from
-    `rj-smfp.recursos_humanos_ergon.ficha_financeira_contabil`  ffc
+  from (SELECT mes_ano_folha as data_folha ,numfunc,valor,emp_codigo as id_empresa,desc_vant from `rj-smfp.recursos_humanos_ergon_staging.ficha_financeira_contabil` WHERE data_particao>='2021-01-01')  ffc
+
   join
     (
       select cast(id_empresa as INT64) empresa,nome_empresa 
@@ -97,7 +78,7 @@ fitabanco_orgSociais_acima2021 as (
   where
         extract(year from safe_cast(data_folha as date)) >= 2021
     and sel1.empresa >= 80
-    and descricao_vantagem = '1'
+    and desc_vant = '1'
   group by
      id_empresa
     ,data_folha
