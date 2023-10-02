@@ -60,7 +60,7 @@ select
 from  `rj-smfp.recursos_humanos_ergon_staging.setor` S
 INNER JOIN `rj-smfp.recursos_humanos_ergon_staging.setor` S1
 ON
-S.FLEX_CAMPO_05 = S1.SETOR AND S1.DATAFIM IS NULL 
+S.FLEX_CAMPO_05 = S1.SETOR AND S1.DATAFIM IS --NULL 
 AND S1.EMP_CODIGO = S.EMP_CODIGO
 ) S
 ON S.SETOR = P.SETOR AND S.EMP_CODIGO = V.EMP_CODIGO AND S.DATAFIM IS NULL
