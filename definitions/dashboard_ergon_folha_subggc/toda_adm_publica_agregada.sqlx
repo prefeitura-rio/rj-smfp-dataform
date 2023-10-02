@@ -6,7 +6,6 @@ config {
 
 }
 
-
 with TODA_ADM_PUBLICA AS (
 SELECT 
 
@@ -30,8 +29,7 @@ SELECT
   CAST(fita_banco.valorliq AS float64) AS valorliq,
   fita_banco.numdepen,
   fita_banco.numpens, 
-  fita_banco.setor,
-  teste.siglaTESTE
+  fita_banco.setor
 
 FROM `rj-smfp.recursos_humanos_ergon_staging.vinculo` V
 
