@@ -101,6 +101,7 @@ LEFT JOIN fitabanco_orgSociais_acima2021 B ON A.numfunc = B.id_funcao
 where data_folha is not null
 )
 
+
 select 
 
   regimejur as REGIME_JURIDICO, categoria as CATEGORIA, emp_codigo as EMP_CODIGO,sexo AS SEXO, --idade AS IDADE
@@ -123,3 +124,5 @@ select
 
 from juntando
 group by 1,2,3,4,5,6,7,8,9,10,11,12
+
+
