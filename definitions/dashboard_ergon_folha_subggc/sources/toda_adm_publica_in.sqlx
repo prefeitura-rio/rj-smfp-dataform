@@ -1,7 +1,7 @@
 config {
     
     type: "table",
-    name: "toda_adm_publica",
+    name: "toda_adm_publica_in",
     schema: "dashboard_ergon_folha_subggc",
     description: "Tabela dTb_Empresa_setor_inativos_pensionistas"
 
@@ -15,7 +15,7 @@ SELECT
   V.regimejur,
   V.categoria as categoria_servidor,
   V.emp_codigo,
-  dtb_adm_direta.sigla as orgao,
+  dtb_adm_indireta.sigla as orgao,
   EMPRE.ENTES_ADMINISTRATIVOS, 
   EMPRE.MACRO_CATEGORIA,
   EMPRE.FANTASIA,
@@ -40,6 +40,7 @@ SELECT
   FCG.FG,
   FCG.TABVENC
 
+
 FROM `rj-smfp.recursos_humanos_ergon_staging.vinculo` V
 
 LEFT JOIN `rj-smfp.recursos_humanos_ergon_staging.funcionario` FC ON V.NUMFUNC = FC.NUMERO
@@ -55,13 +56,13 @@ LEFT JOIN `rj-smfp.dashboard_ergon_folha_subggc.funcao_gratificada_codigos` FG O
 
 LEFT JOIN `rj-smfp.recursos_humanos_ergon.dTb_empresas` EMPRE ON CAST(EMPRE.EMPRESA AS INT64) = CAST(V.EMP_CODIGO AS INT64)
 
-LEFT JOIN ${ref("dTb_Empresas_Setor_admDireta")} as dtb_adm_direta ON  cast(fita_banco.setor as STRING) = cast(dtb_adm_direta.id_setor as STRING) and 
-cast(fita_banco.emp_codigo as STRING) = cast(dtb_adm_direta.id_empresa as STRING)
-
+LEFT JOIN ${ref("dTb_Empresas_Setor_admIndireta")} as dtb_adm_indireta ON  cast(fita_banco.setor as STRING) = cast(dtb_adm_indireta.id_setor as STRING) and 
+cast(fita_banco.emp_codigo as STRING) = cast(dtb_adm_indireta.id_empresa as STRING)
 
 LEFT JOIN `rj-smfp-dev.dashboard_ergon_folha_subggc.HIST_FUNCAO_EV` HF ON  CAST(REGEXP_REPLACE(CAST(fita_banco.funcao AS STRING), r'\..*', '') AS STRING) = cast(HF.FUNCAO as string)
 
 LEFT JOIN  `rj-smfp.dashboard_ergon_folha_subggc.pessoa_cargo_fg` FCG ON FCG.numfunc = V.numfunc and FCG.numvinc = V.numero and FCG.mes_ano = fita_banco.mes_ano
 
 
-where dtb_adm_direta.sigla is not null
+
+where dtb_adm_indireta.sigla is not null
