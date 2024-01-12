@@ -15,7 +15,7 @@ config {
     ,safe_cast(emp_codigo as INT64) id_empresa
     ,safe_cast(setor as INT64) id_setor
   from
-   `rj-smfp.recursos_humanos_ergon_staging.fita_banco`
+   `rj-smfp.recursos_humanos_ergon.fita_banco`
     where  mes_ano>='2021-01-01'
     and emp_codigo not in ('1','2','4')
     and emp_codigo < '80'

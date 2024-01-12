@@ -17,7 +17,7 @@ config {
     ,safe_cast(ffc.emp_codigo as INT64) id_empresa
 
   from
-    `rj-smfp.recursos_humanos_ergon_staging.ficha_financeira_contabil`  ffc
+    `rj-smfp.recursos_humanos_ergon.ficha_financeira_contabil`  ffc
   join
     (
       select cast(id_empresa as INT64) empresa,nome_empresa 
@@ -27,7 +27,7 @@ config {
     on
       safe_cast(ffc.emp_codigo as INT64) = sel1.empresa
 
-  LEFT JOIN  `rj-smfp.recursos_humanos_ergon_staging.fita_banco` fb on 
+  LEFT JOIN  `rj-smfp.recursos_humanos_ergon.fita_banco` fb on 
   fb.numfunc = ffc.numfunc and fb.numvinc = ffc.numvinc and fb.mes_ano = ffc.mes_ano_folha
 
 
