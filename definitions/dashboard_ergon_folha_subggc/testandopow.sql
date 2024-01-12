@@ -8,4 +8,4 @@ config {
 }
 
 
-select * from ${ref("fitabancoorgsociais")}
+select * from ${ref("dtb_Empresa")}
