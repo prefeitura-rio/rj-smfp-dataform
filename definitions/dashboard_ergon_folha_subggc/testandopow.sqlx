@@ -8,4 +8,4 @@ config {
 }
 
 
-select * from ${ref("dtb_Empresa")}
+select * from ${ref("data_auxiliar")}
