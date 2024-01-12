@@ -3,7 +3,7 @@ config {
     type: "table",
     name: "data_auxiliar",
     schema: "dashboard_ergon_folha_subggc",
-    description: "Tabela dTb_Empresa_setor_inativos_pensionistas"
+    description: "Esta tabela separa as informacoes de ano e mes e escreve o nome do mes por extenso"
 
 }
 

@@ -3,7 +3,7 @@ config {
     type: "table",
     name: "dTb_Empresas_Setor_admDireta",
     schema: "dashboard_ergon_folha_subggc",
-    description: "Tabela dTb_Empresa_setor_inativos_pensionistas"
+    description: "Esta tabela traz as informacoes de codigo e nome das empresas e setores da administração direta"
 
 }
    select
