@@ -1,9 +1,0 @@
-config {
-    
-    type: "table",
-    name: "teste_novo",
-    schema: "dashboard_ergon_folha_subggc",
-    description: "Tabela teste"
-
-}
-select * from ${ref("data_auxiliar")}
