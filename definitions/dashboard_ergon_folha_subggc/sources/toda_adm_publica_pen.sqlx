@@ -1,0 +1,46 @@
+config {
+    
+    type: "table",
+    name: "toda_adm_publica_pen",
+    schema: "dashboard_ergon_folha_subggc",
+    description: "Tabela dTb_Empresa_setor_inativos_pensionistas"
+
+}
+
+SELECT 
+
+  distinct
+  V.numfunc, 
+  V.numero, 
+  V.regimejur,
+  V.categoria as categoria_servidor,
+  V.emp_codigo,
+  --V.dtvac,
+  FC.sexo,
+  DATE_DIFF(CURRENT_DATE(), DATE(FC.dtnasc), YEAR) AS idade,
+  --C.NOME AS NOME_CARGO ,
+  FG.FG_NOME AS FUNCAO_GRATIFICADA,
+  fita_banco.mes_ano, 
+  CAST(fita_banco.valorvan AS float64) AS valorvan,
+  CAST(fita_banco.valordes AS float64) AS valordes, 
+  CAST(fita_banco.valorliq AS float64) AS valorliq,
+  fita_banco.numdepen,
+  fita_banco.numpens, 
+  fita_banco.setor,
+  FCG.cargo_padronizado,
+  FCG.CARGO_PRIVATIVOS
+
+FROM `rj-smfp.recursos_humanos_ergon_staging.vinculo` V
+
+LEFT JOIN `rj-smfp.recursos_humanos_ergon_staging.funcionario` FC ON V.NUMFUNC = FC.NUMERO
+
+LEFT JOIN `rj-smfp.recursos_humanos_ergon_staging.provimento` P	ON V.NUMFUNC = P.NUMFUNC AND V.NUMERO = P.NUMVINC AND P.EMP_CODIGO = V.EMP_CODIGO
+
+LEFT JOIN `rj-smfp.recursos_humanos_ergon_staging.cargo` C ON C.CARGO = P.CARGO
+
+LEFT JOIN `rj-smfp.recursos_humanos_ergon_staging.fita_banco` fita_banco ON fita_banco.numfunc = V.numfunc and fita_banco.numvinc = V.numero and fita_banco.data_particao>='2021-01-01' 
+
+-- O regex foi utilizado para remover os '.' e todo valor após ele
+LEFT JOIN `rj-smfp.dashboard_ergon_folha_subggc.funcao_gratificada_codigos` FG ON CAST(FG.FG_CODIGO AS STRING) = CAST(REGEXP_REPLACE(CAST(fita_banco.funcao AS STRING), r'\..*', '') AS STRING)
+
+LEFT JOIN  `rj-smfp.dashboard_ergon_folha_subggc.pessoa_cargo_fg` FCG ON FCG.numfunc = V.numfunc and FCG.numvinc = V.numero and FCG.mes_ano = fita_banco.mes_ano
