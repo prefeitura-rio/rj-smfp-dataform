@@ -1,0 +1,21 @@
+config {
+    
+    type: "table",
+    name: "dTb_Empresa_setor_org_sociais",
+    schema: "dashboard_ergon_folha_subggc",
+    description: "Tabela dTb_Empresa_setor_inativos_pensionistas"
+
+}
+
+  select 
+    distinct 
+     id_empresa
+    ,id_secretaria
+    ,id_setor
+    ,sigla
+  from
+    `rj-smfp.recursos_humanos_ergon.setor`
+  where
+     id_empresa >= '80'
+  order by 
+    id_empresa

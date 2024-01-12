@@ -1,0 +1,46 @@
+config {
+    
+    type: "table",
+    name: "fitabanco_orgSociais_acima2021",
+    schema: "dashboard_ergon_folha_subggc",
+    description: "Tabela fitabanco_orgSociais_acima2021"
+
+}
+
+    select 
+    distinct 
+     safe_cast(ffc.mes_ano_folha as DATE) data_folha
+    ,safe_cast(ffc.numfunc||ffc.numvinc as STRING) id_funcao
+    ,sum(safe_cast(ffc.valor as FLOAT64)) valor_bruto
+    ,safe_cast(ffc.emp_codigo as INT64) id_empresa
+
+  from
+    `rj-smfp.recursos_humanos_ergon_staging.ficha_financeira_contabil`  ffc
+  join
+    (
+      select cast(id_empresa as INT64) empresa,nome_empresa 
+      from `rj-smfp.recursos_humanos_ergon.empresas` 
+      order by cast(id_empresa as INT64)
+    )sel1
+    on
+      safe_cast(ffc.emp_codigo as INT64) = sel1.empresa
+
+  LEFT JOIN  `rj-smfp.recursos_humanos_ergon_staging.fita_banco` fb on 
+  fb.numfunc = ffc.numfunc and fb.numvinc = ffc.numvinc and fb.mes_ano = ffc.mes_ano_folha
+
+
+  where
+    extract(year from safe_cast(mes_ano_folha as date)) >= 2021
+                           # se incluir a 90 ou 80, comentat 
+    and sel1.empresa >= 80 and ffc.emp_codigo not in ("90","80")
+    and ffc.desc_vant = '1'
+ 
+  group by
+
+     id_empresa
+    ,data_folha
+    ,id_funcao
+
+  order by 
+     data_folha
+    ,id_empresa 

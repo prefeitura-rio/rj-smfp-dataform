@@ -1,0 +1,22 @@
+config {
+    
+    type: "table",
+    name: "data_auxiliar",
+    schema: "dashboard_ergon_folha_subggc",
+    description: "Tabela dTb_Empresa_setor_inativos_pensionistas"
+
+}
+
+SELECT
+  DATE_TRUNC(date, MONTH) AS data_mes,
+  EXTRACT(YEAR FROM date) AS ano,
+  EXTRACT(MONTH FROM date) AS mes,
+  ARRAY(
+    SELECT month_name
+    FROM UNNEST(['A.Janeiro', 'B.Fevereiro', 'C.Março', 'D.Abril', 'E.Maio', 'F.Junho',
+                 'G.Julho', 'H.Agosto', 'I.Setembro', 'J.Outubro', 'L.Novembro', 'M.Dezembro']) AS month_name
+    WITH OFFSET
+    WHERE OFFSET + 1 = EXTRACT(MONTH FROM date)
+  )[OFFSET(0)] AS nome_mes
+FROM
+  UNNEST(GENERATE_DATE_ARRAY(DATE('2021-01-01'), CURRENT_DATE(), INTERVAL 1 MONTH)) AS date

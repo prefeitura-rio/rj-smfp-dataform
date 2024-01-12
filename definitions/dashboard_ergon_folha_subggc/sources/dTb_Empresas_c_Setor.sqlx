@@ -1,0 +1,28 @@
+config {
+    
+    type: "table",
+    name: "dTb_Empresas_c_Setor",
+    schema: "dashboard_ergon_folha_subggc",
+    description: "Tabela dTb_Empresa_setor_inativos_pensionistas"
+
+}
+
+  select 
+    distinct 
+     safe_cast(s.id_empresa as INT64) id_empresa
+    ,safe_cast (s.id_secretaria as INT64) id_secretaria
+    ,safe_cast (s.id_setor as INT64) id_setor
+    ,safe_cast(s1.sigla as STRING) sigla
+    ,safe_cast(de.entes_administrativos as STRING) entes_administrativos
+  from `rj-smfp.recursos_humanos_ergon.setor` s
+  join `rj-smfp.recursos_humanos_ergon.dTb_empresas` de
+    on s.id_empresa = cast(de.empresa as STRING)
+  join `rj-smfp.recursos_humanos_ergon.setor` s1
+    on s.id_secretaria = s1.id_setor
+    and s.id_empresa = s1.id_empresa
+    and s1.id_empresa = cast(de.empresa as STRING)
+  where
+    (s.data_fim is null or s.data_fim >= '2021-01-01')
+    and (s1.data_fim is null or s1.data_fim >= '2021-01-01')
+  order by 
+    id_empresa

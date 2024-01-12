@@ -1,0 +1,23 @@
+config {
+    
+    type: "table",
+    name: "BI_ADM_DIRETA",
+    schema: "dashboard_ergon_folha_subggc",
+    description: "Tabela BI_ADM_DIRETA"
+
+}
+
+SELECT 
+    A.*, 
+    'Administração Direta' as identificador,
+    C.ano,
+    C.mes, 
+    C.nome_mes
+  from 
+  (select * from ${ref("fitabanco_ativos_pcrj")} where id_empresa in (select id_empresa from ${ref("dTb_Empresas_Setor_admDireta")})) AS A  
+  
+  LEFT JOIN  (SELECT  * FROM ${ref("data_auxiliar")}) AS C
+  ON
+  A.data_folha = C.data_mes
+
+

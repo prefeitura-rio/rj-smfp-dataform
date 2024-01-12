@@ -1,0 +1,28 @@
+config {
+    
+    type: "table",
+    name: "fitabanco_inativos_pensionistas",
+    schema: "dashboard_ergon_folha_subggc",
+    description: "Tabela dTb_Empresa_setor_inativos_pensionistas"
+
+}
+
+  select 
+    distinct 
+     safe_cast(mes_ano as DATE) data_folha
+    ,safe_cast(numfunc||numvinc as STRING) id_funcao
+    ,safe_cast(valorvan as FLOAT64) valor_bruto
+    ,safe_cast(emp_codigo as INT64) id_empresa
+    ,safe_cast(setor as INT64) id_setor
+
+  from
+    `rj-smfp.recursos_humanos_ergon_staging.fita_banco`
+    
+    where  mes_ano>='2021-01-01'
+    and emp_codigo in ('2', '4' )
+   -- and numdepen is null
+   -- and numpens is null
+    and setor != 'SEM LOTACAO'
+
+  order by 
+    data_folha desc
