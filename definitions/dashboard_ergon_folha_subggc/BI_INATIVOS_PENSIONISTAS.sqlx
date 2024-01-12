@@ -25,6 +25,6 @@ config {
 
   from (SELECT * FROM ${ref("fitabanco_inativos_pensionistas")})  AS A  
   
-  LEFT JOIN  (SELECT  * FROM `leafy-glyph-328823.lucas_dirk.data_auxiliar`) AS C
+  LEFT JOIN  (SELECT  * FROM ${ref("data_auxiliar")}) AS C
   ON
   A.data_folha = C.data_mes
