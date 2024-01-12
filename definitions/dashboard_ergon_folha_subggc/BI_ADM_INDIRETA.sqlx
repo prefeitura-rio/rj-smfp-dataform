@@ -7,27 +7,36 @@ config {
 
 }
 
+with base as (
 SELECT
+
   A.*,
   'Administração Indireta' AS identificador,
   C.ano,
   C.mes,
-  C.nome_mes
-FROM (
-  SELECT
-    *
-  FROM
-    ${ref("fitabanco_ativos_indireta")}
-  WHERE
-    id_empresa IN (
-    SELECT
-      id_empresa
-    FROM
-      ${ref("dTb_Empresas_Setor_admIndireta")})) AS A
-LEFT JOIN (
-  SELECT
-    *
-  FROM
-    ${ref("data_auxiliar")}) AS C
+  C.nome_mes,
+  b.cargo_padronizado,
+  b.categoria,
+  b.subcategoria,
+  b.CARGO_PRIVATIVOS,
+  b.CARGO_PRIVATIVOS_SUB,
+  b.FG,
+  b.TABVENC
+
+FROM (SELECT * FROM ${ref("fitabanco_ativos_indireta")}
+
+WHERE id_empresa IN ( SELECT id_empresa FROM ${ref("dTb_Empresas_Setor_admIndireta")})) AS A
+
+LEFT JOIN (SELECT * FROM ${ref("data_auxiliar")}) AS C
 ON
-  A.data_folha = C.data_mes
+A.data_folha = C.data_mes
+
+LEFT JOIN `rj-smfp.dashboard_ergon_folha_subggc.pessoa_cargo_fg` b
+ON
+cast(b.id_funcao  as string)=  cast(A.id_funcao as string) and cast(b.mes_ano as string) = cast(A.data_folha as string) 
+)
+
+select distinct * from base
+UNION ALL
+SELECT distinct * FROM ${ref("COMLURB")}
+

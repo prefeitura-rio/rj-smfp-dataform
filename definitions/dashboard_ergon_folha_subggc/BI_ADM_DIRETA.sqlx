@@ -32,3 +32,7 @@ SELECT
   ON
   cast(b.id_funcao  as string)=  cast(A.id_funcao as string) and cast(b.mes_ano as string) = cast(A.data_folha as string) 
 
+
+
+
+
