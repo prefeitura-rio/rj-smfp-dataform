@@ -1,7 +1,7 @@
 config {
     
     type: "table",
-    name: "dTb_Empresas_c_Setor",
+    name: "dTb_Empresas_Setor",
     schema: "dashboard_ergon_folha_subggc",
     description: "Esta tabela traz as informacoes de codigo e nome das empresas e setores da administração direta e indireta"
 
