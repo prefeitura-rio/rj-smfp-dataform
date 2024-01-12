@@ -1,0 +1,37 @@
+config {
+    
+    type: "table",
+    name: "COMLURB",
+    schema: "dashboard_ergon_folha_subggc",
+    description: "Tabela COMLURB"
+
+}
+
+SELECT 
+  distinct
+  cast(MES_ANO as date) AS data_folha, 
+  safe_cast(v.numfunc||v.numero as STRING) id_funcao,
+  CAST(fita_banco.valorvan AS float64) AS valor_bruto,
+  0 as id_empresa, 
+  0 as id_setor,
+  'Administração Indireta' as identificador,
+    dat.ano,
+    dat.mes, 
+    dat.nome_mes,
+  'null' as cargo_padronizado,
+  'null' as categoria,
+  'null' as subcategoria,
+  'null' as CARGO_PRIVATIVOS,
+  'null' as CARGO_PRIVATIVOS_SUB,
+  'null' as FG,
+  'null' as TABVENC
+
+  FROM `rj-smfp.recursos_humanos_ergon_comlurb_staging.vinculo` V
+  LEFT JOIN  `rj-smfp.recursos_humanos_ergon_comlurb_staging.funcionario` FC ON V.NUMFUNC = FC.NUMERO 
+  LEFT JOIN `rj-smfp.recursos_humanos_ergon_comlurb_staging.funcionario_evento` P	ON V.NUMFUNC = P.NUMFUNC AND V.NUMERO = P.NUMVINC AND P.EMP_CODIGO = V.EMP_CODIGO
+  LEFT JOIN `rj-smfp.recursos_humanos_ergon_comlurb_staging.cargo` C ON C.CARGO = P.CARGO
+  LEFT JOIN `rj-smfp.recursos_humanos_ergon_comlurb_staging.fita_banco` fita_banco ON fita_banco.numfunc = V.numfunc and fita_banco.numvinc = V.numero and fita_banco.data_particao>='2021-01-01' 
+
+  LEFT JOIN  (SELECT  * FROM ${ref("data_auxiliar")}) AS dat ON cast(fita_banco.MES_ANO as date) = cast(dat.data_mes as date)
+
+  where (v.dtvac is null or v.dtvac>='2021-01-01') and V.regimejur != 'PENSAO' and   MES_ANO is not null

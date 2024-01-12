@@ -12,7 +12,15 @@ SELECT
     'Administração Direta' as identificador,
     C.ano,
     C.mes, 
-    C.nome_mes
+    C.nome_mes,
+    b.cargo_padronizado,
+    b.categoria,
+    b.subcategoria,
+    b.CARGO_PRIVATIVOS,
+    b.CARGO_PRIVATIVOS_SUB,
+    b.FG,
+    b.TABVENC
+
   from 
   (select * from ${ref("fitabanco_ativos_pcrj")} where id_empresa in (select id_empresa from ${ref("dTb_Empresas_Setor_admDireta")})) AS A  
   
@@ -20,4 +28,7 @@ SELECT
   ON
   A.data_folha = C.data_mes
 
+  LEFT JOIN `rj-smfp.dashboard_ergon_folha_subggc.pessoa_cargo_fg` b
+  ON
+  cast(b.id_funcao  as string)=  cast(A.id_funcao as string) and cast(b.mes_ano as string) = cast(A.data_folha as string) 
 

@@ -1,0 +1,33 @@
+config {
+
+    type: "table",
+    name: "BI_ADM_INDIRETA",
+    schema: "dashboard_ergon_folha_subggc",
+    description: "Tabela BI_ADM_INDIRETA"
+
+}
+
+SELECT
+  A.*,
+  'Administração Indireta' AS identificador,
+  C.ano,
+  C.mes,
+  C.nome_mes
+FROM (
+  SELECT
+    *
+  FROM
+    ${ref("fitabanco_ativos_indireta")}
+  WHERE
+    id_empresa IN (
+    SELECT
+      id_empresa
+    FROM
+      ${ref("dTb_Empresas_Setor_admIndireta")})) AS A
+LEFT JOIN (
+  SELECT
+    *
+  FROM
+    ${ref("data_auxiliar")}) AS C
+ON
+  A.data_folha = C.data_mes
