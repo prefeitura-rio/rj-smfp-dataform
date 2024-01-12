@@ -49,7 +49,7 @@ LEFT JOIN `rj-smfp.recursos_humanos_ergon_staging.provimento` P	ON V.NUMFUNC = P
 
 LEFT JOIN `rj-smfp.recursos_humanos_ergon_staging.cargo` C ON C.CARGO = P.CARGO
 
-LEFT JOIN `rj-smfp.recursos_humanos_ergon.fita_banco` fita_banco ON fita_banco.numfunc = V.numfunc and fita_banco.numvinc = V.numero and fita_banco.data_particao>='2021-01-01' 
+LEFT JOIN `rj-smfp.recursos_humanos_ergon_staging.fita_banco` fita_banco ON fita_banco.numfunc = V.numfunc and fita_banco.numvinc = V.numero and fita_banco.data_particao>='2021-01-01' 
 
 -- O regex foi utilizado para remover os '.' e todo valor após ele
 LEFT JOIN `rj-smfp.dashboard_ergon_folha_subggc.funcao_gratificada_codigos` FG ON CAST(FG.FG_CODIGO AS STRING) = CAST(REGEXP_REPLACE(CAST(fita_banco.funcao AS STRING), r'\..*', '') AS STRING)
