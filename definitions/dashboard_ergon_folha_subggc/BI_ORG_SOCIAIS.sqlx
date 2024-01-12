@@ -1,0 +1,32 @@
+config {
+
+    type: "table",
+    name: "BI_ORG_SOCIAIS",
+    schema: "dashboard_ergon_folha_subggc",
+    description: "Tabela BI_ORG_SOCIAIS"
+
+}
+
+SELECT 
+    A.*, 
+    null as id_setor,
+    "Os's" as identificador,
+    C.ano,
+    C.mes, 
+    C.nome_mes,
+    b.cargo_padronizado,
+    b.categoria,
+    b.subcategoria,
+    b.CARGO_PRIVATIVOS,
+    b.CARGO_PRIVATIVOS_SUB,
+    b.FG,
+    b.TABVENC
+from (SELECT * FROM ${ref("fitabancoorgsociais")}) AS A  
+  
+LEFT JOIN  (SELECT  * FROM ${ref("data_auxiliar")}) AS C
+ON
+A.data_folha = C.data_mes
+  
+LEFT JOIN `rj-smfp.dashboard_ergon_folha_subggc.pessoa_cargo_fg` b
+ON
+cast(b.id_funcao  as string)=  cast(A.id_funcao as string) and cast(b.mes_ano as string) = cast(A.data_folha as string)
