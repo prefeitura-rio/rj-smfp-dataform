@@ -1,0 +1,30 @@
+config {
+
+    type: "table",
+    name: "BI_INATIVOS_PENSIONISTAS",
+    schema: "dashboard_ergon_folha_subggc",
+    description: "Tabela BI_INATIVOS_PENSIONISTAS"
+
+}
+
+  SELECT 
+    A.*, 
+    'Inativos & Pensionistas' as identificador
+
+    ,C.ano,
+    C.mes, 
+    C.nome_mes
+
+    ,cast(null as string) as cargo_padronizado
+    ,cast(null as string) as categoria
+    ,cast(null as string) as subcategoria
+    ,cast(null as string) as CARGO_PRIVATIVOS
+    ,cast(null as string) as CARGO_PRIVATIVOS_SUB
+    ,cast(null as string) as FG
+    ,cast(null as string) as TABVENC
+
+  from (SELECT * FROM ${ref("fitabanco_inativos_pensionistas")})  AS A  
+  
+  LEFT JOIN  (SELECT  * FROM `leafy-glyph-328823.lucas_dirk.data_auxiliar`) AS C
+  ON
+  A.data_folha = C.data_mes

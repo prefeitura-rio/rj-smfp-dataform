@@ -1,0 +1,18 @@
+config {
+    
+    type: "table",
+    name: "BI_TOTAL",
+    schema: "dashboard_ergon_folha_subggc",
+    description: "Tabela fitabanco_orgSociais_acima2021"
+
+}
+
+
+select * from ${ref("BI_ADM_DIRETA")}
+UNION ALL
+SELECT * FROM ${ref("BI_ADM_INDIRETA")}
+UNION ALL
+select * from ${ref("BI_INATIVOS_PENSIONISTAS")}
+UNION ALL 
+SELECT * FROM ${ref("BI_ORG_SOCIAIS")}
+
