@@ -8,18 +8,19 @@ config {
 }
 
 SELECT 
-    A.*, 
-    'Administração Direta' as identificador,
-    C.ano,
-    C.mes, 
-    C.nome_mes,
-    b.cargo_padronizado,
-    b.categoria,
-    b.subcategoria,
-    b.CARGO_PRIVATIVOS,
-    b.CARGO_PRIVATIVOS_SUB,
-    b.FG,
-    b.TABVENC
+    A.*
+    ,'Administração Direta' as identificador
+    ,C.ano
+    ,C.mes
+    ,C.nome_mes
+    ,COALESCE(b.cargo, 'INCONSISTÊNCIA') AS cargo
+    ,COALESCE(b.cargo_padronizado, 'INCONSISTÊNCIA') AS cargo_padronizado
+    ,COALESCE(b.categoria, 'INCONSISTÊNCIA') AS categoria
+    ,COALESCE(b.subcategoria, 'INCONSISTÊNCIA') AS subcategoria
+    ,b.CARGO_PRIVATIVOS
+    ,b.CARGO_PRIVATIVOS_SUB
+    ,b.FG
+    ,b.TABVENC
 
   from 
   (select * from ${ref("fitabanco_ativos_pcrj")} where id_empresa in (select id_empresa from ${ref("dTb_Empresas_Setor_admDireta")})) AS A  
