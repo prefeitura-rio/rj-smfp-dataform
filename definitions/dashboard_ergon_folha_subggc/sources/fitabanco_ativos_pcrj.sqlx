@@ -7,19 +7,46 @@ config {
 
 }
 
-  select 
-    distinct 
-     safe_cast(mes_ano as DATE) data_folha
-    ,safe_cast(numfunc||numvinc as STRING) id_funcao
-    ,safe_cast(valorvan as FLOAT64) valor_bruto
-    ,safe_cast(emp_codigo as INT64) id_empresa
-    ,safe_cast(setor as INT64) id_setor
-  from
-   `rj-smfp.recursos_humanos_ergon.fita_banco`
-    where  mes_ano>='2021-01-01'
-    and emp_codigo = '1'
-    and numdepen is null
-    and numpens is null
-   
-  order by 
-    data_folha,id_funcao desc
+SELECT 
+    DISTINCT 
+    safe_cast(FBCO.mes_ano AS DATE) AS data_folha
+    ,safe_cast(FBCO.numfunc||FBCO.numvinc AS STRING) AS id_funcao
+    ,safe_cast(FBCO.valorvan AS FLOAT64) AS valor_bruto
+    ,safe_cast(FBCO.emp_codigo AS INT64) id_empresa
+    ,COALESCE(safe_cast(FBCO.setor AS STRING), safe_cast(PROV.setor AS STRING), safe_cast(PVCP.setor AS STRING), 'SEM LOTAÇÃO') AS id_setor
+  FROM
+   `rj-smfp.recursos_humanos_ergon.fita_banco` AS FBCO
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon_staging.provimento` AS PROV ON
+        (
+          FBCO.mes_ano >= '2021-01-01'
+          AND FBCO.emp_codigo = '1'
+          AND FBCO.numdepen IS NULL 
+          AND FBCO.numpens IS NULL
+          AND PROV.numfunc = FBCO.numfunc
+          AND PROV.numvinc = FBCO.numvinc
+          AND PROV.emp_codigo = CAST(FBCO.emp_codigo AS STRING)
+          AND FBCO.mes_ano BETWEEN PARSE_DATE('%Y-%m-%d', SUBSTR(PROV.dtini, 1, 10)) AND PARSE_DATE('%Y-%m-%d', SUBSTR(PROV.dtfim, 1, 10))
+        )
+    LEFT JOIN 
+      (
+        SELECT
+          numfunc, numvinc, emp_codigo, setor, MAX(dtfim) max_dtfim 
+        FROM `rj-smfp.recursos_humanos_ergon_staging.provimento` AS PVCP
+        GROUP BY
+          numfunc, numvinc, emp_codigo, setor
+      ) AS PVCP ON
+        (
+          FBCO.mes_ano >= '2021-01-01'
+          AND FBCO.emp_codigo = '1'
+          AND FBCO.numdepen IS NULL 
+          AND FBCO.numpens IS NULL
+          AND PVCP.numfunc = FBCO.numfunc
+          AND PVCP.numvinc = FBCO.numvinc
+          AND PVCP.emp_codigo = CAST(FBCO.emp_codigo AS STRING)
+        )
+      WHERE  FBCO.mes_ano>='2021-01-01'
+      AND FBCO.emp_codigo = '1'
+      AND FBCO.numdepen IS NULL
+      AND FBCO.numpens IS NULL
+ORDER BY 
+  data_folha, id_funcao DESC    
