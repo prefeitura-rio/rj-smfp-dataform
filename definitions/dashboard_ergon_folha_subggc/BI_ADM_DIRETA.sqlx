@@ -16,8 +16,8 @@ SELECT
     ,COALESCE(b.cargo_padronizado, 'INCONSISTÊNCIA') AS cargo_padronizado
     ,COALESCE(b.categoria, 'INCONSISTÊNCIA') AS categoria
     ,COALESCE(b.subcategoria, 'INCONSISTÊNCIA') AS subcategoria
-    ,b.CARGO_PRIVATIVOS
-    ,b.CARGO_PRIVATIVOS_SUB
+    ,COALESCE(b.CARGO_PRIVATIVOS, 'INCONSISTÊNCIA') AS cargo_privativos
+    ,COALESCE(b.CARGO_PRIVATIVOS_SUB, 'INCONSISTÊNCIA') AS cargo_privativos_sub
     ,b.FG
     ,b.TABVENC
     ,b.funcao
