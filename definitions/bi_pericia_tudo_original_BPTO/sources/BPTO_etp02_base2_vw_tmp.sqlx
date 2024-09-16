@@ -1,0 +1,99 @@
+config {
+    type: "view",
+    name: "BPTO_etp02_base2_vw_tmp",
+    description: "view temporaria etapa 02 de montagem do bi_pericia_tudo_original"
+}
+
+SELECT DISTINCT
+    VW.CHAVE AS CHAVEPRONT                      --ERGON.PRONTUARIO
+    , J.ID_JUNTA
+    , P.NUMFUNC
+    , VW.MATRICULA
+    , VW.NOMESERVIDOR
+    , VW.DTATEND                                --ERGON.PRONTUARIO
+    , VW.DTCONCLUSAO AS DTCONCLUSAO_ATENDIMENTO --ERGON.PRONTUARIO
+    , J.DTCONCLUSAO AS DTCONCLUSAO_HOMOLOGACAO
+    , P.COD_CID1
+    , P.COD_CID2
+    , P.COD_CID3
+    , E.GRUPO2EXAME AS TIPO_ATENDIMENTO
+    , VW.GRUPOEXAME AS GRUPO_PERICIA_CODIGO     --ERGON.EXAMES e ERGON.ERG_PM_GRUPOEXAME (igual nas duas)
+    , VW.NOMEGRUPO AS GRUPO_PERICIA_DESC        --ERGON.ERG_PM_GRUPOEXAME variavel NOME (eh o que chamamos de GRUPO_PERICIA no codigo de licenca)
+    , VW.SIGLAEXAME AS SIGLA                    --ERGON.EXAME igual a SIGLA da ERGON.PRONTUARIO e igual a SIGLAEXAME da ERGON.DECISAO
+    , VW.SIGLAEXAME2 AS SIGLA_DESC              --ERGON.EXAME variavel chama NOME e eh a descricao da SIGLA (ERGON.PRONTUARIO, ERGON.DECISAO e ERGON.EXAME)
+    , VW.DECISAO AS DECISAO_PERITO_CODIGO       --antigo DECISAO_PERITOJUNTA_CODIGO --ERGON.PRONTUARIO (eh um codigo cuja descricao se encontra na tabela ERGON.DECISAO, nas variaveis SIGLA e DESCRICAO)
+    , VW.SIGLA_DECISAO AS DECISAO_PERITO        --antigo DECISAO_PERITOJUNTA --ERGON.DECISAO chamamos de RESULTADO no codigo de licenca
+    , VW.SIGLA_DECISAO2 AS DECISAO_PERITO_DESC  --antigo DECISAO_PERITOJUNTA_DESC --ERGON.DECISAO descricao da SIGLA_DECISAO
+    , RJ.DECISAO AS DECISAO_PHOMOLOGADOR_CODIGO
+    , D.SIGLA AS DECISAO_PHOMOLOGADOR_RESULT
+    , D.DESCRICAO AS DECISAO_PHOMOLOGADOR_DESC
+    , M.CRM
+    , RJ.CRM AS PERITO_HOMOLOGADOR_CRM          --se for necessario tem tambem ID_RESULTJUNTA
+    , M1.NOME AS PERITO_HOMOLOGADOR_NOME
+    , V.DTPOSSE
+    , V.DTVAC
+    , V.EMP_CODIGO
+    , F.SEXO
+    , FLOOR(DATE_DIFF(safe_cast(VW.DTATEND AS DATE), safe_cast(f.DTNASC AS DATE), MONTH) / 12) AS IDADE
+    , PR.SIGLA_SEC ORGAO
+    , PR.DTINI_LOTACAO
+    , PR.DTFIM_LOTACAO
+    , CASE
+            WHEN P.COD_CID1 >= 'A00' AND P.COD_CID1 <= 'B99.9999'  THEN 'Doenças infecciosas e parasitárias'
+            WHEN P.COD_CID1 >= 'C00' AND P.COD_CID1 <= 'D48.9999'  THEN 'Neoplasias (tumores)'
+            WHEN P.COD_CID1 >= 'D50' AND P.COD_CID1 <= 'D89.9999'  THEN 'Doenças do sangue e do sistema imunológico'
+            WHEN P.COD_CID1 >= 'E00' AND P.COD_CID1 <= 'E90.9999'  THEN 'Doenças endócrinas nutricionais e metabólicas'
+            WHEN P.COD_CID1 >= 'F00' AND P.COD_CID1 <= 'F99.9999'  THEN 'Transtornos mentais e comportamentais'
+            WHEN P.COD_CID1 >= 'G00' AND P.COD_CID1 <= 'G99.9999'  THEN 'Doenças do sistema nervoso'
+            WHEN P.COD_CID1 >= 'H00' AND P.COD_CID1 <= 'H59.9999'  THEN 'Doenças do olho e anexos'
+            WHEN P.COD_CID1 >= 'H60' AND P.COD_CID1 <= 'H95.9999'  THEN 'Doenças do ouvido'
+            WHEN P.COD_CID1 >= 'I00' AND P.COD_CID1 <= 'I99.9999'  THEN 'Doenças do aparelho circulatório'
+            WHEN P.COD_CID1 >= 'J00' AND P.COD_CID1 <= 'J99.9999'  THEN 'Doenças do aparelho respiratório'
+            WHEN P.COD_CID1 >= 'K00' AND P.COD_CID1 <= 'K93.9999'  THEN 'Doenças do aparelho digestivo'
+            WHEN P.COD_CID1 >= 'L00' AND P.COD_CID1 <= 'L99.9999'  THEN 'Doenças da pele e do tecido subcutâneo'
+            WHEN P.COD_CID1 >= 'M00' AND P.COD_CID1 <= 'M99.9999'  THEN 'Doenças nos ossos, músculos e tecidos conectivos'
+            WHEN P.COD_CID1 >= 'N00' AND P.COD_CID1 <= 'N99.9999'  THEN 'Doenças do aparelho geniturinário'
+            WHEN P.COD_CID1 >= 'O00' AND P.COD_CID1 <= 'O99.9999'  THEN 'Gravidez parto e puerpério'
+            WHEN P.COD_CID1 >= 'P00' AND P.COD_CID1 <= 'P96.9999'  THEN 'Condições perinatais e neonatais'
+            WHEN P.COD_CID1 >= 'Q00' AND P.COD_CID1 <= 'Q99.9999'  THEN 'Anomalias congênitas e genéticas'	 
+            WHEN P.COD_CID1 >= 'R00' AND P.COD_CID1 <= 'R99.9999'  THEN 'Sinais e sintomas não específicos'
+            WHEN P.COD_CID1 >= 'S00' AND P.COD_CID1 <= 'T98.9999'  THEN 'Traumas, envenenamento e ações externas'
+            WHEN P.COD_CID1 >= 'V01' AND P.COD_CID1 <= 'Y98.9999'  THEN 'Fatores externos de risco para a saúde'
+            WHEN P.COD_CID1 >= 'Z00' AND P.COD_CID1 <= 'Z99.9999'  THEN 'Atendimentos em serviços de saúde'
+            WHEN P.COD_CID1 >= 'U04' AND P.COD_CID1 <= 'U99.9999'  THEN 'Códigos especiais ou de uso específico'
+            ELSE 'Sem informação'
+    END AS GRUPAMENTO_CID
+FROM `rj-smfp.recursos_humanos_ergon_pericia_medica.tpmrj_pm_vwtpconclper` VW
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica.prontuario` P
+        ON VW.CHAVE = P.CHAVE
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica.erg_pm_pront_med` PM
+        ON P.CHAVE = PM.CHAVEPRONT
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica.medicos` M
+        ON PM.CRM = M.CRM    
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon_staging.provimento` PROV 
+        ON M.NUMFUNC = PROV.NUMFUNC AND M.FLEX_CAMPO_01 = PROV.NUMVINC
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica.exames` E
+        ON P.SIGLA = E.SIGLA
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica.erg_pm_grupoexame` G
+        ON E.GRUPOEXAME = G.GRUPOEXAME
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica.tpmrj_pm_periciasjunta` PJ
+        ON P.CHAVE = PJ.CHAVEPRONT
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica.tpmrj_pm_juntas` J
+        ON PJ.ID_JUNTA = J.ID_JUNTA
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica.tpmrj_pm_resultjunta` RJ
+        ON J.ID_JUNTA = RJ.ID_JUNTA
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica.medicos` M1
+        ON RJ.CRM = M1.CRM
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica.erg_pm_decisao` D
+        ON RJ.DECISAO = D.DECISAO
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon_staging.vinculo` v 
+        ON v.MATRIC = VW.MATRICULA
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon_staging.funcionario` f
+        ON f.NUMERO = v.NUMFUNC 
+    LEFT JOIN ${ref("BPTO_etp01_provimento_vw_tmp")} PR
+        ON VW.MATRICULA = PR.MATRIC
+        AND (safe_cast(VW.DTATEND as DATE) BETWEEN safe_cast(PR.DTINI_LOTACAO AS DATE) AND PR.DTFIM_LOTACAO ) 
+    WHERE VW.DTATEND >='01-JAN-2017'
+      AND VW.NOMEGRUPO NOT IN ('FONOAUDIOLOGIA - FONO', 'SERVIÇO SOCIAL - SESO')
+      AND E.GRUPO2EXAME != 'FONO'
+    ORDER BY P.NUMFUNC

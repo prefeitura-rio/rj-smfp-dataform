@@ -1,0 +1,48 @@
+config {
+    type: "view",
+    name: "BPTO_etp01_provimento_vw_tmp",
+    description: "view temporaria etapa 01 de montagem do bi_pericia_tudo_original"
+}
+
+SELECT DISTINCT 
+       VINC.NUMFUNC                       --VINCULOS
+     , VINC.NUMERO                        --VINCULOS
+     , VINC.MATRIC
+     , VINC.DTVAC    
+     , STOR.FLEX_CAMPO_05 AS CODIGO_SEC   --HSETOR_
+     , STO1.FLEX_CAMPO_01 AS SIGLA_SEC    --HSETOR_
+     , PROV.SETOR AS CODIGO_SETOR         --PROVIMENTOS_EV
+     , STOR.FLEX_CAMPO_01 AS SIGLA_SETOR  --HSETOR_
+     , STOR.NOMESETOR AS NOME_SETOR       --HSETOR_
+     , PROV.DTINI AS DTINI_LOTACAO
+     , IFNULL(DATE(PROV.DTFIM), CURRENT_DATE('America/Sao_Paulo')) AS DTFIM_LOTACAO
+     , CRGO.NOME
+
+    FROM `rj-smfp.recursos_humanos_ergon_staging.vinculo` AS VINC
+      LEFT JOIN `rj-smfp.recursos_humanos_ergon_staging.funcionario` AS FUNC ON VINC.NUMFUNC = FUNC.NUMERO
+      LEFT JOIN `rj-smfp.recursos_humanos_ergon_staging.provimento` AS PROV ON
+        (
+          VINC.NUMFUNC = PROV.NUMFUNC
+          AND VINC.NUMERO = PROV.NUMVINC
+          AND PROV.EMP_CODIGO = VINC.EMP_CODIGO
+        )
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon_staging.setor` AS STOR ON
+        (
+          STOR.SETOR = PROV.SETOR
+          AND STOR.EMP_CODIGO = VINC.EMP_CODIGO
+          AND STOR.DATAFIM IS NULL
+        )
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon_staging.setor` AS STO1 ON
+        (
+          STOR.FLEX_CAMPO_05 = STO1.SETOR
+          AND STO1.DATAFIM IS NULL
+          AND STO1.EMP_CODIGO = STOR.EMP_CODIGO
+        )
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon_staging.cargo` AS CRGO ON CRGO.CARGO = PROV.CARGO
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica.designacoes_ev` AS DSGN ON
+        (
+          VINC.NUMFUNC = DSGN.NUMFUNC
+          AND VINC.NUMERO = DSGN.NUMVINC
+        )
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon_staging.setor` AS HTOR ON DSGN.SETOR = HTOR.SETOR
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica.funcoes_ev` AS FCEV ON DSGN.FUNCAO = FCEV.FUNCAO

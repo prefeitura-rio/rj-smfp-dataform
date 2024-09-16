@@ -1,0 +1,33 @@
+config {
+    type: "view",
+    name: "BPT_etp01_perito_vw_tmp",
+    description: "view temporaria etapa 01 de montagem do bi_pericia_tudo"
+}
+
+SELECT DISTINCT
+    M.NUMFUNC
+    , M.FLEX_CAMPO_01 AS NUMVINC
+    , M.CRM
+    , M.NOME AS NOME_PERITO
+    , H.EMP_CODIGO
+    , H.FLEX_CAMPO_05 AS CODIGO_ORGAO
+    , D.SETOR AS CODIGO_SETOR
+    , H.FLEX_CAMPO_01 AS SIGLA_SETOR
+    , H.NOMESETOR AS NOME_SETOR
+    , D.FUNCAO AS CODIGO_FG
+    , FG.NOME AS NOME_FG
+    , D.DTINI AS DTINI_FG
+    , D.DTFIM AS DTFIM_FG
+FROM `rj-smfp.recursos_humanos_ergon_pericia_medica_staging.medicos` M
+  LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica_staging.designacoes_ev` D
+    ON cast(cast(M.numfunc as float64) as int64) = CAST(D.NUMFUNC AS INT64)
+    AND CAST(M.FLEX_CAMPO_01 AS INT64) = CAST(D.NUMVINC AS INT64)
+  LEFT JOIN `rj-smfp.recursos_humanos_ergon_staging.setor` H
+    ON D.SETOR = H.SETOR
+    AND H.DATAFIM IS NULL
+  LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica_staging.funcoes_ev` FG
+    ON D.FUNCAO = FG.FUNCAO
+WHERE D.DTFIM IS NULL
+  AND (H.FLEX_CAMPO_01 LIKE '%FP/SUBGGC/CTPM%'
+       OR H.FLEX_CAMPO_01 IS NULL)
+ORDER BY M.NOME

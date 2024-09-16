@@ -1,0 +1,48 @@
+config {
+    type: "table",
+    name: "bi_pericia_tudo_original_n01",
+    dependencies: ["BPTO_backup_nxx"],
+    description: "Tabela que junta todos e setores e suas respectivas secretarias observando o intervalo de tempo de suas existencias"
+}
+
+SELECT 
+  DISTINCT
+	safe_cast(CHAVEPRONT AS INT64) AS CHAVEPRONT
+	, safe_cast(ID_JUNTA AS FLOAT64) AS ID_JUNTA
+	, safe_cast(NUMFUNC AS INT64) AS NUMFUNC
+	, MATRICULA
+	, NOMESERVIDOR
+	, DTATEND
+	, DTCONCLUSAO_ATENDIMENTO
+	, DTCONCLUSAO_HOMOLOGACAO
+	, COD_CID1
+	, COD_CID2
+	, COD_CID3
+	, TIPO_ATENDIMENTO
+	, GRUPO_PERICIA_CODIGO
+	, GRUPO_PERICIA_DESC
+	, SIGLA
+	, SIGLA_DESC
+	, DECISAO_PERITO_CODIGO
+	, DECISAO_PERITO
+	, DECISAO_PERITO_DESC
+	, DECISAO_PHOMOLOGADOR_CODIGO
+	, DECISAO_PHOMOLOGADOR_RESULT
+	, DECISAO_PHOMOLOGADOR_DESC
+	, PERITO_HOMOLOGADOR_CRM
+	, PERITO_HOMOLOGADOR_NOME
+	, DTPOSSE
+	, DTVAC
+	, safe_cast(EMP_CODIGO AS FLOAT64) AS EMP_CODIGO
+	, SEXO
+	, safe_cast(IDADE AS STRING) AS IDADE
+	, ORGAO
+	, DTINI_LOTACAO
+	, DTFIM_LOTACAO
+	, GRUPAMENTO_CID
+ 	, CRM
+FROM ${ref("BPTO_etp02_base2_vw_tmp")}
+ORDER BY 
+  MATRICULA
+  , NUMFUNC
+  , DTATEND

@@ -1,0 +1,82 @@
+config {
+    type: "table",
+    name: "BPT_etp03_joincargo_tmp",
+    description: ""
+}
+
+SELECT
+  A.CHAVEPRONT
+  , A.ID_JUNTA
+  , A.NUMFUNC
+  , A.MATRICULA
+  , A.TIPO_ATENDIMENTO
+  , A.GRUPO_PERICIA_DESC
+  , A.SIGLA
+  , A.DECISAO_PERITO
+  , A.DECISAO_PERITO_DESC
+  , A.DECISAO_PHOMOLOGADOR_RESULT
+  , A.DECISAO_PHOMOLOGADOR_DESC
+  , A.PERITO_HOMOLOGADOR_CRM
+  , A.PERITO_HOMOLOGADOR_NOME
+  , A.EMP_CODIGO
+  , A.SEXO
+  , A.ORGAO
+  , A.GRUPAMENTO_CID
+  , A.CRM
+  , A.NOME_PERITO
+  , A.JORNADA_PERITO
+  , A.NOME_FG
+  , FORMAT_DATE('%Y-%m-%d', DATE(
+      CONCAT(
+            CAST(CONCAT('20', SUBSTR(A.DTATEND, -2)) AS STRING),
+            '-',
+            CASE 
+              WHEN A.DTATEND LIKE '%/01/%' THEN '01'
+              WHEN A.DTATEND LIKE '%/02/%' THEN '02'
+              WHEN A.DTATEND LIKE '%/03/%' THEN '03'
+              WHEN A.DTATEND LIKE '%/04/%' THEN '04'
+              WHEN A.DTATEND LIKE '%/05/%' THEN '05'
+              WHEN A.DTATEND LIKE '%/06/%' THEN '06'
+              WHEN A.DTATEND LIKE '%/07/%' THEN '07'
+              WHEN A.DTATEND LIKE '%/08/%' THEN '08'
+              WHEN A.DTATEND LIKE '%/09/%' THEN '09'
+              WHEN A.DTATEND LIKE '%/10/%' THEN '10'
+              WHEN A.DTATEND LIKE '%/11/%' THEN '11'
+              WHEN A.DTATEND LIKE '%/12/%' THEN '12'
+            END,
+            '-',
+            CAST(SUBSTR(A.DTATEND, 1, 2) AS STRING)
+    ))) AS DTATEND  
+  ,  CASE
+        WHEN safe_cast(A.IDADE AS INT64) <= 25 THEN 'Até 25 anos'
+        WHEN safe_cast(A.IDADE AS INT64) BETWEEN 26 AND 40 THEN 'De 26 a 40 anos'
+        WHEN safe_cast(A.IDADE AS INT64) BETWEEN 40 AND 55 THEN 'De 41 a 55 anos'
+        WHEN safe_cast(A.IDADE AS INT64) BETWEEN 55 AND 70 THEN 'De 56 a 70 anos'
+        WHEN safe_cast(A.IDADE AS INT64) > 70 THEN 'Mais de 70 anos'
+        ELSE 'Não informado'
+    END AS IDADE
+    , C.nome as CARGO_SERVIDOR
+    , C.CARGO_PADRONIZADO
+    , C.CARGO_PRIVATIVOS
+FROM ${ref("BPT_etp02_info_vw_tmp")} AS A
+  LEFT JOIN `rj-smfp.recursos_humanos_ergon_staging.vinculo` AS V ON A.MATRICULA = V.matric
+  LEFT JOIN (
+              SELECT numfunc, NUMVINC, EMP_CODIGO, CARGO, max(dtini) as dtini
+              FROM `rj-smfp.recursos_humanos_ergon_staging.provimento`
+              GROUP BY 1,2,3,4
+            ) AS P ON
+    (
+      cast(V.numfunc AS string) = cast(P.NUMFUNC AS string)   
+      AND cast(V.numero AS string) = cast(P.NUMVINC  AS string) 
+    )
+  LEFT JOIN `rj-smfp-dev.dashboard_ergon_folha_subggc.cargos_depara`C ON C.CARGO = P.CARGO
+
+
+
+
+
+
+
+
+
+

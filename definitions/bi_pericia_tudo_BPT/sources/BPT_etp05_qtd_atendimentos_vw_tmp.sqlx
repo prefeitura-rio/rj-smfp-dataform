@@ -1,0 +1,10 @@
+config {
+    type: "view",
+    name: "BPT_etp05_qtd_atendimentos_vw_tmp",
+    description: "view temporaria que auxilia na montagem do bi_pericia_tudo"
+}
+
+SELECT NUMFUNC,
+       COUNT(DISTINCT CHAVEPRONT) AS IDAS_PERICIA
+FROM ${ref("BPT_etp04_grupopericia_tmp")}
+GROUP BY 1

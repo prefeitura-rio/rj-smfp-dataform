@@ -1,0 +1,6 @@
+config {
+        dependencies: ["bi_pericia_tudo_original_n01"]
+}
+
+DROP VIEW IF EXISTS `rj-smfp-dev.dashboard_ergon_pericia_medica_subggc.BPTO_etp01_provimento_vw_tmp`;
+DROP VIEW IF EXISTS `rj-smfp-dev.dashboard_ergon_pericia_medica_subggc.BPTO_etp02_base2_vw_tmp`;

@@ -1,0 +1,11 @@
+config {
+    type: "table",
+    name: "bi_pericia_tudo_n02",
+    dependencies: ["BPT_backup_nxx"],
+    description: "Tabela que junta todos e setores e suas respectivas secretarias observando o intervalo de tempo de suas existencias"
+}
+
+SELECT A.*,
+       B.IDAS_PERICIA
+FROM ${ref("BPT_etp04_grupopericia_tmp")} A
+  LEFT JOIN ${ref("BPT_etp05_qtd_atendimentos_vw_tmp")} B ON A.NUMFUNC = B.NUMFUNC

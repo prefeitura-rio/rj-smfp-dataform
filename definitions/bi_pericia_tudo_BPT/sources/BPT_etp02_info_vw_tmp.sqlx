@@ -1,0 +1,29 @@
+config {
+    type: "view",
+    name: "BPT_etp02_info_vw_tmp",
+    description: "view temporaria etapa 02 de montagem do bi_pericia_tudo"
+}
+
+SELECT A.*, 
+       M.nome AS NOME_PERITO,
+       P.jornada AS JORNADA_PERITO,
+       IFNULL(FG.NOME_FG,"Sem função gratificada") AS NOME_FG
+    FROM ${ref("bi_pericia_tudo_original_n01")} AS A
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon_staging.vinculo` AS V ON A.MATRICULA = V.MATRIC 
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica_staging.medicos` AS M ON M.crm = A.CRM
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon_staging.provimento` AS P ON
+        (
+            cast(cast(M.numfunc AS float64) AS int64) = cast(P.numfunc AS int64)
+            AND cast(M.flex_campo_01 AS int64) = cast(P.numvinc AS int64)
+        )
+    LEFT JOIN ${ref("BPT_etp01_perito_vw_tmp")} AS FG ON FG.CRM = A.CRM 
+WHERE 
+    P.DTINI = (
+                SELECT MAX(P2.DTINI)
+                FROM `rj-smfp.recursos_humanos_ergon_staging.provimento` P2
+                WHERE P.NUMFUNC = P2.NUMFUNC AND P.NUMVINC = P2.NUMVINC
+              )
+    AND GRUPO_PERICIA_DESC NOT IN ('FONOAUDIOLOGIA - FONO', 'SERVIÇO SOCIAL - SESO') --incluído em 27/06/2024
+    AND TIPO_ATENDIMENTO != 'FONO'
+ORDER BY
+    A.NUMFUNC, A.MATRICULA, A.DTATEND DESC

@@ -1,8 +1,7 @@
 {
-  "defaultSchema": "dataform",
+  "defaultSchema": "dashboard_ergon_pericia_medica_subggc",
   "assertionSchema": "dataform_assertions",
   "warehouse": "bigquery",
-  "defaultDatabase": "rj-smfp",
+  "defaultDatabase": "rj-smfp-dev",
   "defaultLocation": "US"
 }
-    
