@@ -29,7 +29,7 @@ SET bkp_para_excluir = (
                                           WHERE
                                             objeto = 'rj-smfp-dev.dashboard_ergon_pericia_medica_subggc.bi_pericia_tudo'
                                             and dt_remocao is null
-                                            and dt_criacao < DATETIME_SUB(CURRENT_DATETIME(), INTERVAL 1 minute)
+                                            and dt_criacao < DATETIME_SUB(CURRENT_DATETIME(), INTERVAL 1 DAY)
                                           ) AS BKPS
                           WHERE
                             rnum > 3 limit 1

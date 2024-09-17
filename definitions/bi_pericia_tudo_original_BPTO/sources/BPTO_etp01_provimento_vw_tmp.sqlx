@@ -5,7 +5,7 @@ config {
 }
 
 SELECT DISTINCT 
-       VINC.NUMFUNC                       --VINCULOS
+     VINC.NUMFUNC                         --VINCULOS
      , VINC.NUMERO                        --VINCULOS
      , VINC.MATRIC
      , VINC.DTVAC    
@@ -15,7 +15,7 @@ SELECT DISTINCT
      , STOR.FLEX_CAMPO_01 AS SIGLA_SETOR  --HSETOR_
      , STOR.NOMESETOR AS NOME_SETOR       --HSETOR_
      , PROV.DTINI AS DTINI_LOTACAO
-     , IFNULL(DATE(PROV.DTFIM), CURRENT_DATE('America/Sao_Paulo')) AS DTFIM_LOTACAO
+     , FORMAT_DATETIME('%Y-%m-%d', IFNULL(DATE(PROV.DTFIM), CURRENT_DATE('America/Sao_Paulo'))) AS DTFIM_LOTACAO
      , CRGO.NOME
 
     FROM `rj-smfp.recursos_humanos_ergon_staging.vinculo` AS VINC
