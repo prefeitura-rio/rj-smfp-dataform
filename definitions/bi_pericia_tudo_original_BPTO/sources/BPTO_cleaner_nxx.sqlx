@@ -1,4 +1,5 @@
 config {
+        type: "operations",
         dependencies: ["bi_pericia_tudo_original_n01"]
 }
 

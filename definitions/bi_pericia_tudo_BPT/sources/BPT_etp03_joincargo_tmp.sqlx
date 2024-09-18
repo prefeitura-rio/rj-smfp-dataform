@@ -26,27 +26,7 @@ SELECT
   , A.NOME_PERITO
   , A.JORNADA_PERITO
   , A.NOME_FG
-  , FORMAT_DATE('%Y-%m-%d', DATE(
-      CONCAT(
-            CAST(CONCAT('20', SUBSTR(A.DTATEND, -2)) AS STRING),
-            '-',
-            CASE 
-              WHEN A.DTATEND LIKE '%/01/%' THEN '01'
-              WHEN A.DTATEND LIKE '%/02/%' THEN '02'
-              WHEN A.DTATEND LIKE '%/03/%' THEN '03'
-              WHEN A.DTATEND LIKE '%/04/%' THEN '04'
-              WHEN A.DTATEND LIKE '%/05/%' THEN '05'
-              WHEN A.DTATEND LIKE '%/06/%' THEN '06'
-              WHEN A.DTATEND LIKE '%/07/%' THEN '07'
-              WHEN A.DTATEND LIKE '%/08/%' THEN '08'
-              WHEN A.DTATEND LIKE '%/09/%' THEN '09'
-              WHEN A.DTATEND LIKE '%/10/%' THEN '10'
-              WHEN A.DTATEND LIKE '%/11/%' THEN '11'
-              WHEN A.DTATEND LIKE '%/12/%' THEN '12'
-            END,
-            '-',
-            CAST(SUBSTR(A.DTATEND, 1, 2) AS STRING)
-    ))) AS DTATEND  
+  , DTATEND
   ,  CASE
         WHEN safe_cast(A.IDADE AS INT64) <= 25 THEN 'Até 25 anos'
         WHEN safe_cast(A.IDADE AS INT64) BETWEEN 26 AND 40 THEN 'De 26 a 40 anos'

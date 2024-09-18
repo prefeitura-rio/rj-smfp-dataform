@@ -1,3 +1,5 @@
+config { type: "operations" }
+
 DECLARE prefix STRING;           -- prefixo de data adicionado na tabela de backup
 DECLARE bkp_para_excluir STRING; -- nome da tabela de backup que deve ser excluida
 DECLARE table_existe BOOL;       -- variavel de flag controla a execução do backup caso não exista a tabela original

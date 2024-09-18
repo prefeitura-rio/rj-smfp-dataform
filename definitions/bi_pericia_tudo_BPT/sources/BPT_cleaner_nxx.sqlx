@@ -1,9 +1,10 @@
 config {
+        type: "operations",
         dependencies: ["bi_pericia_tudo_n02"]
 }
 
 DROP VIEW IF EXISTS `rj-smfp-dev.dashboard_ergon_pericia_medica_subggc.BPT_etp01_perito_vw_tmp`;
-DROP VIEW IF EXISTS `rj-smfp-dev.dashboard_ergon_pericia_medica_subggc.BPT_etp02_info_vw_tmp`; 
-DROP TABLE IF EXISTS `rj-smfp-dev.dashboard_ergon_pericia_medica_subggc.BPT_etp03_joincargo_tmp`; 
-DROP TABLE IF EXISTS `rj-smfp-dev.dashboard_ergon_pericia_medica_subggc.BPT_etp04_grupopericia_tmp`;  
-DROP VIEW IF EXISTS `rj-smfp-dev.dashboard_ergon_pericia_medica_subggc.BPT_etp05_qtd_atendimentos_vw_tmp`; 
+DROP VIEW IF EXISTS `rj-smfp-dev.dashboard_ergon_pericia_medica_subggc.BPT_etp02_info_vw_tmp`;
+DROP TABLE IF EXISTS `rj-smfp-dev.dashboard_ergon_pericia_medica_subggc.BPT_etp03_joincargo_tmp`;
+DROP TABLE IF EXISTS `rj-smfp-dev.dashboard_ergon_pericia_medica_subggc.BPT_etp04_grupopericia_tmp`;
+DROP VIEW IF EXISTS `rj-smfp-dev.dashboard_ergon_pericia_medica_subggc.BPT_etp05_qtd_atendimentos_vw_tmp`;

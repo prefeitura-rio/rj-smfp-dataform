@@ -2,10 +2,47 @@ config {
     type: "table",
     name: "bi_pericia_tudo_n02",
     dependencies: ["BPT_backup_nxx"],
-    description: "Tabela que junta todos e setores e suas respectivas secretarias observando o intervalo de tempo de suas existencias"
+    description: "Tabela que junta todos e setores e suas respectivas secretarias observando o intervalo de tempo de suas existencias",
+    assertions: {
+      nonNull: ["dtatend", "CHAVEPRONT", "NUMFUNC", "DTATEND", "SIGLA"],
+      rowConditions: [
+        'REGEXP_CONTAINS(dtatend, r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")'
+      ]
+    }    
 }
 
-SELECT A.*,
-       B.IDAS_PERICIA
+SELECT 
+  A.*
+  , B.IDAS_PERICIA
+  , CASE
+        WHEN B.IDAS_PERICIA = 1 THEN '1 atendimento'
+        WHEN B.IDAS_PERICIA = 2 THEN '2 atendimentos'
+        WHEN B.IDAS_PERICIA = 3 THEN '3 atendimentos'
+        WHEN B.IDAS_PERICIA = 4 THEN '4 atendimentos'
+        WHEN B.IDAS_PERICIA = 5 THEN '5 atendimentos'
+        WHEN B.IDAS_PERICIA BETWEEN 6 AND 10 THEN '6 a 10 atendimentos'
+        WHEN B.IDAS_PERICIA >= 11 THEN 'Mais de 10 atendimentos'
+    END AS IDAS_AGRUPADAS
+    , CASE
+        WHEN A.NOME_FG = 'Sem função gratificada' THEN JORNADA_PERITO
+        ELSE '40 HORAS'
+    END AS JORNADA_FG
+    , CASE
+        WHEN A.NOME_FG = 'Sem função gratificada' THEN 'Não'
+        ELSE NOME_FG
+    END AS NOME_FG_SIMPLES
+    , CASE
+        WHEN A.ORGAO = 'PENSIONISTAS DO MUNICIPIO DO RIO DE JANEIRO' THEN 'PENSIONISTAS'
+        WHEN ORGAO IN (
+            'FUNPREVI (SME)', 'FUNPREVI (SMS)', 'FUNPREVI (GMRIO)', 'FUNPREVI (CMRJ)', 
+            'FUNPREVI (SECONSERVA)', 'FUNPREVI (TCMRJ)', 'FUNPREVI (SMF)', 'FUNPREVI (CGM)', 
+            'FUNPREVI (PREVI RIO)', 'FUNPREVI (PGM)', 'FUNPREVI (SMDS)', 'FUNPREVI (SMU)', 
+            'FUNPREVI (SECONSERMA)', 'FUNPREVI (SMI)', 'FUNPREVI (SMH)', 'FUNPREVI (GBP)', 
+            'FUNPREVI (SMTR)', 'FUNPREVI (SEPDA)', 'FUNPREVI (SMC)', 'FUNPREVI (SMA)', 
+            'FUNPREVI (SMG)', 'FUNPREVI (SMDUE)', 'FUNPREVI (SMTU)', 'FUNPREVI', 
+            'FUNPREVI (FUNDO RIO)', 'FUNPREVI (SMEL)'
+        ) THEN 'APOSENTADOS FUNPREVI'
+        ELSE ORGAO
+    END AS ORGAO_AGRUPADO
 FROM ${ref("BPT_etp04_grupopericia_tmp")} A
   LEFT JOIN ${ref("BPT_etp05_qtd_atendimentos_vw_tmp")} B ON A.NUMFUNC = B.NUMFUNC
