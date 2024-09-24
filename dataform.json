@@ -1,8 +1,8 @@
 {
-  "defaultSchema": "dataform",
+  "defaultSchema": "objetos_auxiliares_subggc",
   "assertionSchema": "dataform_assertions",
   "warehouse": "bigquery",
-  "defaultDatabase": "rj-smfp",
+  "defaultDatabase": "rj-smfp-dev",
   "defaultLocation": "US"
 }
     
