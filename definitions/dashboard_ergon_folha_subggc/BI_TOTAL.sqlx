@@ -6,7 +6,7 @@ config {
     description: "Tabela fitabanco_orgSociais_acima2021"
 
 }
-
+-- teste salvar no git
 
 select * EXCEPT(funcao ,regimejur ,tipovinc ,numfunc ,numvinc) from ${ref("BI_ADM_DIRETA")}
 UNION ALL
