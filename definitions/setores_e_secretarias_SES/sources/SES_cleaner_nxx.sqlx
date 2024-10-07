@@ -1,0 +1,10 @@
+config {
+        type: "operations",
+        tags: ["CLEANER"],
+        dependencies: ["SES_setor_secretaria_n01"]
+}
+
+DROP TABLE IF EXISTS `rj-smfp-dev.objetos_auxiliares_subggc.SES_etp01_secretaria_tmp`;
+DROP TABLE IF EXISTS `rj-smfp-dev.objetos_auxiliares_subggc.SES_etp02_setor_tmp`;
+DROP TABLE IF EXISTS `rj-smfp-dev.objetos_auxiliares_subggc.SES_etp03_setor_secretaria_tmp`;
+DROP VIEW IF EXISTS `rj-smfp-dev.objetos_auxiliares_subggc.SES_etp04_setor_orfao_vw_tmp`;

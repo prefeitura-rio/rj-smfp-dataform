@@ -1,0 +1,40 @@
+config {
+  type: "operations"
+  , description: "Ajustes nos registros de setor que apresentam NULL na secretaria"
+}
+-- Correção das inconsistências do autorrelacionamento da tabela SETOR, onde existem setor e secretaria
+
+-- Primeira correção é feita aproveitando a inicial da sigla do setor ou o nome do setor ou por ultimo a sigla dos casos específicos.
+UPDATE ${ref("SES_etp03_setor_secretaria_tmp")} stsc
+  SET
+    stsc.sec_sigla = trim(regexp_extract(UPPER(coalesce(sorf.sigla, sorf.nome, cmpl.sigla)), r'^[\w -ÁÉÍÓÚÃÕÇ]+\w')) 
+    , stsc.sec_reconhecida = FALSE
+FROM
+  ${ref("SES_etp04_setor_orfao_vw_tmp")} sorf
+  LEFT JOIN (
+              SELECT '310000' AS codigo, 'EGM' AS sigla, 'ENCARGOS GERAIS DO MUNICIPIO' AS nome 
+              UNION ALL
+              SELECT '1800' AS codigo, 'SMS' AS sigla, 'SECRETARIA MUNICIPAL DE SAÚDE' AS nome
+              UNION ALL
+              SELECT '3200' AS codigo, 'SMH' AS sigla, 'FUNDO MUNICIPAL DE HABITAÇÃO DE INTERESSE SOCIAL' AS nome
+            ) AS cmpl ON
+              sorf.codigo_secretaria = cmpl.codigo
+WHERE
+  stsc.id_aux = sorf.id_aux;
+
+-- A segunda correção é feita observando todas as sigas de secretaria encontradas e fazendo uma correlação para encontrar as que faltam
+UPDATE ${ref("SES_etp03_setor_secretaria_tmp")} setc
+SET setc.sec_codigo = coalesce(secc.sec_codigo, secc.sec_sigla)
+FROM 
+  (SELECT emp_codigo, sec_sigla, max(sec_codigo) as sec_codigo FROM ${ref("SES_etp03_setor_secretaria_tmp")} GROUP BY 1, 2) secc
+WHERE
+    setc.sec_codigo IS NULL
+    AND setc.sec_reconhecida = FALSE
+    AND setc.sec_sigla = secc.sec_sigla
+    AND setc.emp_codigo = secc.emp_codigo;
+
+-- A terceira correção é a substituição de siglas estranhas pelo seu equivalente retirado da sigla do setor
+UPDATE ${ref("SES_etp03_setor_secretaria_tmp")} setc
+SET setc.sec_sigla = 'IPLANRIO'
+WHERE setc.sec_sigla = '1'
+

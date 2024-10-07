@@ -1,0 +1,24 @@
+config {
+    type: "view",
+    name: "SES_etp04_setor_orfao_vw_tmp",
+    description: "view temporária"
+}
+
+SELECT 
+  orig.id_aux
+  , orig.setor
+  , orig.codigo_secretaria
+  , orig.sigla
+  , orig.emp_codigo
+  , orig.nome
+  , orig.inicio
+  , orig.fim_aux
+  , orig.fim
+  , TRUE as calculada
+  FROM  ${ref("SES_etp03_setor_secretaria_tmp")} sec
+    JOIN  ${ref("SES_etp02_setor_tmp")} orig ON 
+      (
+        sec.id_aux = orig.id_aux
+        -- or sec.setor = orig.codigo_secretaria
+      )
+  WHERE sec_sigla IS NULL
