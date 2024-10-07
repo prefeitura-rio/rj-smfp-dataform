@@ -1,6 +1,7 @@
 config {
     type: "table",
     name: "bi_pericia_tudo_original_n01",
+    tags: ["EXEC"],
     dependencies: ["BPTO_backup_nxx"],
     description: "Tabela que junta todos e setores e suas respectivas secretarias observando o intervalo de tempo de suas existencias"
 }

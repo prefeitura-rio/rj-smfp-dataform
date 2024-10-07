@@ -1,20 +1,15 @@
 config {
     type: "table",
     name: "bi_pericia_tudo_n02",
-    dependencies: ["BPT_backup_nxx"],
-    description: "Tabela que junta todos e setores e suas respectivas secretarias observando o intervalo de tempo de suas existencias",
-    assertions: {
-      nonNull: ["dtatend", "CHAVEPRONT", "NUMFUNC", "DTATEND", "SIGLA"],
-      rowConditions: [
-        'REGEXP_CONTAINS(dtatend, r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")'
-      ]
-    }    
+    tags: ["EXEC"],
+    dependencies: ["BPT_backup_nxx", "BPT_etp04_grupopericia_tmp"],
+    description: "Tabela que junta todos e setores e suas respectivas secretarias observando o intervalo de tempo de suas existencias"
 }
 
 SELECT 
-  A.*
-  , B.IDAS_PERICIA
-  , CASE
+    A.*
+    , B.IDAS_PERICIA
+    , CASE
         WHEN B.IDAS_PERICIA = 1 THEN '1 atendimento'
         WHEN B.IDAS_PERICIA = 2 THEN '2 atendimentos'
         WHEN B.IDAS_PERICIA = 3 THEN '3 atendimentos'
@@ -45,4 +40,5 @@ SELECT
         ELSE ORGAO
     END AS ORGAO_AGRUPADO
 FROM ${ref("BPT_etp04_grupopericia_tmp")} A
-  LEFT JOIN ${ref("BPT_etp05_qtd_atendimentos_vw_tmp")} B ON A.NUMFUNC = B.NUMFUNC
+LEFT JOIN ${ref("BPT_etp05_qtd_atendimentos_vw_tmp")} B ON A.NUMFUNC = B.NUMFUNC
+

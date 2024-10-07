@@ -1,7 +1,13 @@
 config {
     type: "table",
     name: "BPT_etp04_grupopericia_tmp",
-    description: "PADRONIZACAO GRUPO_PERICIA E TIPO_ATENDIMENTO"
+    description: "PADRONIZACAO GRUPO_PERICIA E TIPO_ATENDIMENTO",
+    assertions: {
+      nonNull: ["dtatend", "CHAVEPRONT", "NUMFUNC", "DTATEND", "SIGLA"],
+      rowConditions: [
+        'REGEXP_CONTAINS(dtatend, r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")'
+      ]
+    }       
 }
 
 SELECT  *,
