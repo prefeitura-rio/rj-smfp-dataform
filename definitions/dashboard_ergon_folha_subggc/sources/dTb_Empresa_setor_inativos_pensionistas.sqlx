@@ -1,10 +1,8 @@
 config {
-    
     type: "table",
     name: "dTb_Empresa_setor_inativos_pensionistas",
     schema: "dashboard_ergon_folha_subggc",
-    description: "Esta tabela traz as informacoes de codigo e nome das empresas da PREVI-RIO"
-
+    description: "Esta tabela traz as informacoes de codigo e nome das empresas da PREVI-RIO",
 }
 select 
     distinct 
