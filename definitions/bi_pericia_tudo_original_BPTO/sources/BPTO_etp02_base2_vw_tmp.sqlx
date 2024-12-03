@@ -63,7 +63,7 @@ SELECT DISTINCT
             WHEN P.COD_CID1 >= 'U04' AND P.COD_CID1 <= 'U99.9999'  THEN 'Códigos especiais ou de uso específico'
             ELSE 'Sem informação'
     END AS GRUPAMENTO_CID
-FROM `rj-smfp.recursos_humanos_ergon_pericia_medica.tpmrj_pm_vwtpconclper` VW
+FROM `rj-smfp.recursos_humanos_ergon_pericia_medica_staging.tpmrj_pm_vwtpconclper ` VW
     LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica.prontuario` P
         ON VW.CHAVE = P.CHAVE
     LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica.erg_pm_pront_med` PM
