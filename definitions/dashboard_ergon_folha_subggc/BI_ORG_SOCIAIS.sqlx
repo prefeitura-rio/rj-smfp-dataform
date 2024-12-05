@@ -14,6 +14,7 @@ SELECT
     C.ano,
     C.mes, 
     C.nome_mes,
+    b.nome as cargo,
     b.cargo_padronizado,
     b.categoria,
     b.subcategoria,

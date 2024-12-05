@@ -13,6 +13,7 @@ SELECT
     ,C.ano
     ,C.mes
     ,C.nome_mes
+    ,COALESCE(b.nome, 'INCONSISTÊNCIA') AS cargo
     ,COALESCE(b.cargo_padronizado, 'INCONSISTÊNCIA') AS cargo_padronizado
     ,COALESCE(b.categoria, 'INCONSISTÊNCIA') AS categoria
     ,COALESCE(b.subcategoria, 'INCONSISTÊNCIA') AS subcategoria

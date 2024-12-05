@@ -8,13 +8,14 @@ config {
 }
 
   SELECT 
-    A.*, 
-    'Inativos & Pensionistas' as identificador
+    A.*
+    ,'Inativos & Pensionistas' as identificador
 
-    ,C.ano,
-    C.mes, 
-    C.nome_mes
+    ,C.ano
+    ,C.mes
+    ,C.nome_mes
 
+    ,cast(null as string) as cargo
     ,cast(null as string) as cargo_padronizado
     ,cast(null as string) as categoria
     ,cast(null as string) as subcategoria

@@ -18,6 +18,7 @@ SELECT
     dat.ano,
     dat.mes, 
     dat.nome_mes,
+  'null' as cargo,
   'null' as cargo_padronizado,
   'null' as categoria,
   'null' as subcategoria,
