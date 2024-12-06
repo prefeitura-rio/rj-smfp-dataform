@@ -65,4 +65,4 @@ LEFT JOIN  `rj-smfp.dashboard_ergon_folha_subggc.pessoa_cargo_fg` FCG ON FCG.num
 
 
 
-where dtb_adm_indireta.sigla is not null
+--where dtb_adm_indireta.sigla is not null
