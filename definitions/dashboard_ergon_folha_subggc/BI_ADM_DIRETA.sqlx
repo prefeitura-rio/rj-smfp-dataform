@@ -24,8 +24,8 @@ SELECT
     ,b.funcao
     ,b.regimejur
     ,b.tipovinc
-    ,b.numfunc
-    ,b.numvinc
+    --,b.numfunc
+    --,b.numvinc
   from 
   (select * from ${ref("fitabanco_ativos_pcrj")} where id_empresa in (select id_empresa from ${ref("dTb_Empresas_Setor_admDireta")})) AS A  
   

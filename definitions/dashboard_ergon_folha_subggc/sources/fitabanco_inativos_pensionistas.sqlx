@@ -11,6 +11,8 @@ config {
     distinct 
      safe_cast(mes_ano as DATE) data_folha
     ,safe_cast(numfunc||numvinc as STRING) id_funcao
+    ,safe_cast(numfunc as STRING) numfunc
+    ,safe_cast(numvinc as STRING) numvinc
     ,safe_cast(valorvan as FLOAT64) valor_bruto
     ,safe_cast(emp_codigo as INT64) id_empresa
     ,safe_cast(setor as INT64) id_setor

@@ -9,15 +9,17 @@ config {
 
 SELECT 
   distinct
-  cast(MES_ANO as date) AS data_folha, 
-  safe_cast(v.numfunc||v.numero as STRING) id_funcao,
-  CAST(fita_banco.valorvan AS float64) AS valor_bruto,
-  0 as id_empresa, 
-  0 as id_setor,
-  'Administração Indireta' as identificador,
-    dat.ano,
-    dat.mes, 
-    dat.nome_mes,
+  cast(MES_ANO as date) AS data_folha
+  ,safe_cast(v.numfunc||v.numero as STRING) id_funcao
+  ,safe_cast(v.numfunc as STRING) numfunc
+  ,safe_cast(v.numero as STRING) numvinc
+  ,CAST(fita_banco.valorvan AS float64) AS valor_bruto
+  ,0 as id_empresa
+  ,0 as id_setor
+  ,'Administração Indireta' as identificador
+  ,  dat.ano
+  ,  dat.mes 
+  ,  dat.nome_mes,
   'null' as cargo,
   'null' as cargo_padronizado,
   'null' as categoria,

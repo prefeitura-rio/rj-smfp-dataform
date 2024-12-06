@@ -13,6 +13,8 @@ config {
     distinct 
      safe_cast(ffc.mes_ano_folha as DATE) data_folha
     ,safe_cast(ffc.numfunc||ffc.numvinc as STRING) id_funcao
+    ,safe_cast(ffc.numfunc as STRING) numfunc
+    ,safe_cast(ffc.numvinc as STRING) numvinc
     ,sum(safe_cast(ffc.valor as FLOAT64)) valor_bruto
     ,safe_cast(ffc.emp_codigo as INT64) id_empresa
 
@@ -42,6 +44,8 @@ config {
      id_empresa
     ,data_folha
     ,id_funcao
+    ,numfunc
+    ,numvinc
 
   order by 
      data_folha

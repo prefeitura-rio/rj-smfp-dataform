@@ -11,6 +11,8 @@ config {
     DISTINCT 
     safe_cast(FBCO.mes_ano AS DATE) AS data_folha
     ,safe_cast(FBCO.numfunc||FBCO.numvinc AS STRING) AS id_funcao
+    ,safe_cast(FBCO.numfunc AS STRING) AS numfunc
+    ,safe_cast(FBCO.numvinc AS STRING) AS numvinc
     ,safe_cast(FBCO.valorvan AS FLOAT64) AS valor_bruto
     ,safe_cast(FBCO.emp_codigo AS INT64) id_empresa
     ,COALESCE(safe_cast(FBCO.setor AS INT64), safe_cast(PROV.setor AS INT64), safe_cast(PVCP.setor AS INT64), 88888888) AS id_setor

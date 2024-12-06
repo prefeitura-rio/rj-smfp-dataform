@@ -8,7 +8,7 @@ config {
 }
 -- teste salvar no git
 
-select * EXCEPT(funcao ,regimejur ,tipovinc ,numfunc ,numvinc) from ${ref("BI_ADM_DIRETA")}
+select * EXCEPT(funcao ,regimejur ,tipovinc) from ${ref("BI_ADM_DIRETA")}
 UNION ALL
 SELECT * FROM ${ref("BI_ADM_INDIRETA")}
 UNION ALL
