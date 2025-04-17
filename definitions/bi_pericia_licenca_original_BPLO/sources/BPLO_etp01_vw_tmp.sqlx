@@ -1,0 +1,55 @@
+config {
+    type: "view",
+    name: "BPLO_etp01_vw_tmp",
+    description: "Busca informações detalhadas sobre licenças médicas de funcionários, combinando dados de prontuário médico, vínculos empregatícios e resultados de perícias realizadas a partir de 1º de janeiro de 2017."
+}
+    /*
+    QD: Este script pode produzir linhas orfãs de funcionarios, sem matricula, numfunc e numvinc. Pode ser monitorado no futuro
+    */
+SELECT
+    CASE
+        WHEN STRPOS(V.id_matricula_vinculo, '/') > 0 THEN SUBSTR(V.id_matricula_vinculo, 1, STRPOS(V.id_matricula_vinculo, '/') - 1)
+        ELSE V.id_matricula_vinculo
+    END AS MATRICULA,
+    V.id_funcionario AS NUMFUNC,
+    V.id_vinculo AS NUMVINC,
+    V.id_empresa AS EMPRESA,
+    V.data_vacancia AS DTVAC,
+    V.data_posse AS ADM, 
+    P.sigla,
+    left(P.dtatend, 10) AS dtatend,
+    CC.descricao AS grupo_cid, 
+    D.negado,
+    D.sigla AS RESULTADO,
+    D.descricao AS DESCRICAO_RESULTADO,
+    left(R.dtini, 10) as dtini,
+    left(R.dtfim, 10) as dtfim, 
+    M.nome AS PERITO,
+    G.NOME AS TIPO_PERICIA, 
+    E.nome AS DESC_TIPO_PERICIA_DETALHADO,
+    E.grupo2exame AS TIPO_ATENDIMENTO 
+-- Variáveis recém adicionadas
+-- DTATEND, TIPO_PERICIA, DESC_TIPO_PERICIA_DETALHADO, TIPO_ATENDIMENTO, RESULTADO, DESCRICAO_RESULTADO
+    FROM `rj-smfp.recursos_humanos_ergon_pericia_medica.prontuario` P -- ergon.prontuario P 
+        LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica.cid` C ON C.codigo = P.cod_cid1 -- ergon.CID
+        LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica.erg_pm_cid10_capitulo` CC ON CC.capitulo = C.capitulo -- ergon.ERG_PM_CID10_CAPITULO
+        LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica.erg_pm_pront_med` PM ON PM.chavepront = P.chave --ergon.ERG_PM_PRONT_MED
+        LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica.erg_pm_resultpront` R on P.chave = R.chavepront --ergon.ERG_PM_RESULTPRONT
+        LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica.erg_pm_decisao` D ON D.decisao = R.decisao -- ergon.ERG_PM_DECISAO
+        LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica.medicos` M ON M.crm = PM.crm --ergon.MEDICOS
+        LEFT JOIN `rj-smfp.recursos_humanos_ergon.funcionario` F on P.numfunc = F.id_vinculo -- id_vinculo é a coluna NUMERO -- ergon.Funcionarios
+        LEFT JOIN `rj-smfp.recursos_humanos_ergon.vinculo` V on V.id_funcionario = F.id_vinculo -- id_vinculo é o número do funcionario NUMERO -- ergon.Vinculos
+        LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica.exames` E ON P.sigla = E.sigla -- ERGON.EXAMES
+        LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica.erg_pm_grupoexame` G ON REGEXP_REPLACE(E.grupoexame, r'\.\d+', '') = G.grupoexame -- ERGON.ERG_PM_GRUPOEXAME 
+        LEFT JOIN `rj-smfp.recursos_humanos_ergon.provimento` PE ON 
+                (
+                    PE.id_funcionario = V.id_funcionario
+                    AND PE.id_vinculo = V.id_vinculo
+                    AND CAST(LEFT(P.dtatend, 10) AS DATE) BETWEEN PE.data_inicio AND IFNULL(PE.data_fim, CURRENT_DATE())
+                )    
+-- ergon.PROVIMENTOS_EV
+WHERE
+    P.sigla LIKE 'LM%'
+    AND P.sigla != 'LMP'
+    AND CAST(LEFT(R.DTINI, 10) AS DATE) >= CAST('2017-01-01' AS DATE)
+    ORDER BY V.id_matricula_vinculo, V.data_exercicio desc

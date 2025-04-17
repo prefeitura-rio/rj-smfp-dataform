@@ -1,0 +1,88 @@
+config {
+    type: "view",
+    name: "BPLO_etp05_vw_tmp",
+    description: ""
+}
+
+WITH PROV AS (
+   SELECT DISTINCT 
+          V.id_funcionario AS NUMFUNC --VINCULOS
+        , V.id_vinculo AS NUMERO --VINCULOS
+        , V.data_vacancia AS DTVAC
+        , HSETOR.id_secretaria AS CODIGO_SEC --HSETOR_
+        , HSETOR_1.sigla AS SIGLA_SEC --HSETOR_
+        , P.id_setor AS CODIGO_SETOR --PROVIMENTOS_EV
+        , HSETOR.sigla AS SIGLA_SETOR --HSETOR_
+        , HSETOR.nome AS NOME_SETOR --HSETOR_
+        , P.data_inicio AS DTINI_LOTACAO
+        --, P.data_fim AS DTFIM_LOTACAO
+        , COALESCE(P.data_inicio, CURRENT_DATE()) AS DTFIM_LOTACAO
+FROM `rj-smfp.recursos_humanos_ergon.vinculo` V
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon.funcionario` FC ON V.id_funcionario = FC.id_vinculo
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon.provimento` P	ON V.id_funcionario = P.id_funcionario AND V.id_vinculo = P.id_vinculo AND P.empresa_vinculo = V.id_empresa
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon.setor` HSETOR ON HSETOR.id_setor = P.id_setor
+        AND HSETOR.id_empresa = V.id_empresa AND HSETOR.data_fim IS NULL
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon.setor` HSETOR_1 ON HSETOR.id_secretaria = HSETOR_1.id_setor 
+        AND HSETOR_1.data_fim IS NULL AND HSETOR_1.id_empresa = HSETOR.id_empresa
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon.cargo` C ON P.id_cargo = C.id_cargo
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica.designacoes_ev` D ON V.id_funcionario = D.numfunc AND V.id_vinculo = D.numvinc
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon.setor` H ON D.setor = H.id_setor
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica.funcoes_ev` FU ON D.FUNCAO = FU.funcao
+--WHERE 
+--V.DTVAC IS NULL 
+),
+-- Colocando o historico dos provimentos.
+CTE9 AS (
+    SELECT 
+        A.*,
+        B.DTINI_LOTACAO,
+        B.DTFIM_LOTACAO, 
+        B.DTVAC,
+        B.SIGLA_SEC ORGAO
+ from ${ref("BPLO_etp04_vw_tmp")} A
+    LEFT JOIN PROV B
+        ON A.NUMFUNC = B.NUMFUNC
+        and A.NUMVINC = B.NUMERO 
+        -- PROBLEMA AQUI --Maria em 24/06/2024: nao sei se esse problema se mantem (acredito que nao)
+        and (A.dtinicio >= B.DTINI_LOTACAO and A.dtinicio <= B.DTFIM_LOTACAO) --or (A.DTINICIO >= B.DTINI_LOTACAO and B.DTFIM_LOTACAO is null)
+),
+FINAL AS (
+    SELECT  
+        MATRICULA, NUMFUNC, NUMVINC, DTVAC, SEXO, EMP_CODIGO, ORGAO,DTINI_LOTACAO, DTFIM_LOTACAO, NOME as CARGO, VALOR, IDADE, DTPOSSE, SIGLA, GRUPO_CID, PERITO,DTINI, DTFIM, DTFIM_ANTERIOR, IDENTIFICADOR_LICENCA,
+        IDAS_PERICIA_MESMA_LICENCA, FAIXA_TEMPO, FAIXA_CERTA AS FAIXA_ACUMULADA_MESMA_LICENCA,NEGADO, 
+        DTATEND, TIPO_PERICIA, DESC_TIPO_PERICIA_DETALHADO, TIPO_ATENDIMENTO, RESULTADO, DESCRICAO_RESULTADO
+from CTE9
+)
+select 
+      MATRICULA,
+      NUMFUNC,
+      NUMVINC,
+      DTPOSSE,
+      DTVAC,
+      SEXO,
+      IDADE,
+      CARGO,
+      EMP_CODIGO,
+      ORGAO,
+      DTINI_LOTACAO,
+      DTFIM_LOTACAO,
+      CAST(ROUND(VALOR, 2) AS INTEGER) as valor,
+      TIPO_ATENDIMENTO,
+      SIGLA,
+      TIPO_PERICIA,
+      DESC_TIPO_PERICIA_DETALHADO,
+      PERITO,
+      NEGADO,
+      REPLACE(GRUPO_CID, ',', ';') as GRUPO_CID,
+      DTATEND,
+      DTINI,
+      DTFIM,
+      IDENTIFICADOR_LICENCA,
+      CAST(round(IDAS_PERICIA_MESMA_LICENCA,0) AS INTEGER) as IDAS_PERICIA_MESMA_LICENCA,
+      CAST(round(FAIXA_ACUMULADA_MESMA_LICENCA,0) AS INTEGER) as FAIXA_ACUMULADA_MESMA_LICENCA,
+      RESULTADO,
+      DESCRICAO_RESULTADO
+from FINAL
+where DTINI >= '2017-01-01'
+and CAST(EMP_CODIGO AS INT64) not in (2,4)
+ORDER BY matricula, IDENTIFICADOR_LICENCA ASC

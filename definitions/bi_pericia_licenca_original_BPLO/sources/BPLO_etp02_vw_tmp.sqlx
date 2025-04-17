@@ -1,0 +1,112 @@
+config {
+    type: "view",
+    name: "BPLO_etp02_vw_tmp",
+    description: "Filtra e prepara dados de licenças médicas de servidores, identificando sequências válidas de afastamentos com base na continuidade das datas e critérios de correção, enriquecendo com informações funcionais e cadastrais."
+}
+
+SELECT      
+    MATRICULA,
+    NUMFUNC,
+    NUMVINC,
+    DTPOSSE,
+    EMP_CODIGO,
+    SEXO,
+    NOME,
+    SIGLA,
+    GRUPO_CID,
+    DTINI,
+    DTFIM,
+    DTFIM_ANTERIOR, 
+    FAIXA_TEMPO,  -- Subtração de DATA agora segura
+    NEGADO,
+    PERITO,
+    IDADE,
+    DTATEND,
+    TIPO_PERICIA,
+    DESC_TIPO_PERICIA_DETALHADO,
+    TIPO_ATENDIMENTO,
+    RESULTADO,
+    DESCRICAO_RESULTADO
+FROM (
+    SELECT  
+        MATRICULA,
+        NUMFUNC,
+        NUMVINC,
+        EMP_CODIGO,
+        DTPOSSE,
+        DTAPOSENT,
+        IDADE,
+        SEXO,
+        CAST(DTINI AS DATE) AS DTINI,  -- Cast para garantir o tipo DATE
+        CAST(DTFIM AS DATE) AS DTFIM,  -- Cast para garantir o tipo DATE
+        DTFIM_ANTERIOR,
+        date_diff(DTFIM, DTINI, DAY) + 1 AS FAIXA_TEMPO,  -- Subtração de DATA agora segura
+        CONTINUACAO,
+        NOME,
+        GRUPO_CID,
+        SIGLA,
+        NEGADO,
+        PERITO,
+        -- Novas variáveis adicionadas
+        CAST(DTATEND AS DATE) AS DTATEND,  -- Cast para garantir o tipo DATE
+        TIPO_PERICIA,
+        DESC_TIPO_PERICIA_DETALHADO,
+        TIPO_ATENDIMENTO,
+        RESULTADO,
+        DESCRICAO_RESULTADO,
+        CASE
+            WHEN DTFIM_ANTERIOR IS NOT NULL AND CONTINUACAO = 1 THEN 'Sim'
+            WHEN DTFIM_ANTERIOR IS NULL AND CONTINUACAO = 0 THEN 'Sim'
+            WHEN CAST(DTFIM_ANTERIOR AS DATE) = DTFIM THEN 'Não'
+            WHEN DATE_DIFF(CAST(DTFIM_ANTERIOR AS DATE), DTINI, DAY) >= 2 AND CONTINUACAO = 0 THEN 'Sim'
+            ELSE 'Sim'
+        END AS CORRETO
+    FROM (
+        SELECT DISTINCT
+            A.MATRICULA,
+            A.SIGLA,
+            B.data_aposentadoria AS DTAPOSENT,
+            B.data_posse AS DTPOSSE,
+            F.SEXO,
+            HSETOR.id_empresa AS EMP_CODIGO,
+            B.id_funcionario AS NUMFUNC,
+            B.id_vinculo AS NUMVINC,
+            CARGOS.NOME,
+            A.PERITO,
+            FLOOR(DATE_DIFF(CAST(A.DTINI AS DATE), CAST(F.data_nascimento AS DATE), MONTH) / 12) AS IDADE,
+            A.GRUPO_CID,
+            A.NEGADO,
+            CAST(A.DTINI AS DATE) AS DTINI,
+            CAST(A.DTFIM AS DATE) AS DTFIM,
+            A.DTATEND,
+            A.TIPO_PERICIA,
+            A.DESC_TIPO_PERICIA_DETALHADO,
+            A.TIPO_ATENDIMENTO,
+            A.RESULTADO,
+            A.DESCRICAO_RESULTADO,
+            CASE
+                WHEN A.matricula = LAG(A.matricula) OVER (ORDER BY A.MATRICULA) 
+                THEN LAG(A.DTFIM) OVER (ORDER BY A.MATRICULA)
+                ELSE NULL
+            END AS DTFIM_ANTERIOR, 
+            CASE
+                WHEN CAST(A.DTINI AS DATE) = LAG(DATE_ADD(CAST(A.DTFIM AS DATE), INTERVAL 1 DAY)) OVER (ORDER BY A.MATRICULA)
+                THEN 1
+                ELSE 0
+            END AS CONTINUACAO
+        FROM (SELECT DISTINCT * FROM ${ref("BPLO_etp01_vw_tmp")}) A
+        LEFT JOIN `rj-smfp.recursos_humanos_ergon.vinculo` B ON A.MATRICULA = B.id_matricula_vinculo
+        LEFT JOIN `rj-smfp.recursos_humanos_ergon.provimento` PROVIMENTOS_EV ON B.id_funcionario = PROVIMENTOS_EV.id_funcionario 
+            AND B.id_vinculo = PROVIMENTOS_EV.id_vinculo AND PROVIMENTOS_EV.data_fim IS NULL
+        LEFT JOIN `rj-smfp.recursos_humanos_ergon.funcionario` F ON B.id_funcionario = F.id_vinculo
+        LEFT JOIN `rj-smfp.recursos_humanos_ergon.cargo` CARGOS ON PROVIMENTOS_EV.id_cargo = CARGOS.id_cargo
+        LEFT JOIN `rj-smfp.recursos_humanos_ergon.setor` HSETOR ON HSETOR.id_setor = PROVIMENTOS_EV.id_setor
+            AND HSETOR.id_empresa = B.id_empresa AND HSETOR.data_fim IS NULL
+        LEFT JOIN `rj-smfp.recursos_humanos_ergon.setor` HSETOR_1 ON HSETOR.id_secretaria = HSETOR_1.id_setor 
+            AND HSETOR_1.data_fim IS NULL AND HSETOR_1.id_empresa = HSETOR.id_empresa
+        WHERE A.DTINI IS NOT NULL
+        ORDER BY A.MATRICULA, DTINI ASC
+        )
+    )
+    WHERE CORRETO != 'Não'
+    ORDER BY MATRICULA, DTINI ASC

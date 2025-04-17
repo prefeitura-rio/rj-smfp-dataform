@@ -9,21 +9,21 @@ DECLARE backup_existe BOOL;      -- variavel de flag controla a remoção dos ba
 SET table_existe = EXISTS (
     SELECT 1
     FROM `rj-smfp-dev.dashboard_ergon_pericia_medica_subggc.INFORMATION_SCHEMA.TABLES`
-    WHERE table_name = 'bi_pericia_tudo_n02');
+    WHERE table_name = 'bi_pericia_licenca_original');
 
 IF table_existe THEN
   SET prefix = FORMAT_DATETIME('%Y%m%d%H%M', DATETIME(CURRENT_DATETIME('America/Sao_Paulo')));
 
   -- cria o backup
   EXECUTE IMMEDIATE FORMAT("""
-    CREATE OR REPLACE TABLE `rj-smfp-dev.backup_subggc.bk_%s_bi_pericia_tudo_n02` AS
-    SELECT * FROM `rj-smfp-dev.dashboard_ergon_pericia_medica_subggc.bi_pericia_tudo_n02`
+    CREATE OR REPLACE TABLE `rj-smfp-dev.backup_subggc.bk_%s_bi_pericia_licenca_original` AS
+    SELECT * FROM `rj-smfp-dev.dashboard_ergon_pericia_medica_subggc.bi_pericia_licenca_original`
   """, prefix);
 
   -- registra o backup criado no controle de backups para que possa ser removido automaticamente posteriormente
   INSERT INTO `rj-smfp-dev.objetos_auxiliares_subggc.aux_backup_control_log_n00` (objeto, copia, dt_criacao) 
-  values ('rj-smfp-dev.dashboard_ergon_pericia_medica_subggc.bi_pericia_tudo_n02',
-    concat('bk_', prefix ,'_bi_pericia_tudo_n02'), DATETIME(CURRENT_DATETIME('America/Sao_Paulo')));
+  values ('rj-smfp-dev.dashboard_ergon_pericia_medica_subggc.bi_pericia_licenca_original',
+    concat('bk_', prefix ,'_bi_pericia_licenca_original'), DATETIME(CURRENT_DATETIME('America/Sao_Paulo')));
 
 
   -- Busca o registro mais antigo para eliminar o backup.
@@ -37,7 +37,7 @@ IF table_existe THEN
                                             FROM 
                                               `rj-smfp-dev.objetos_auxiliares_subggc.aux_backup_control_log_n00`
                                             WHERE
-                                              objeto = 'rj-smfp-dev.dashboard_ergon_pericia_medica_subggc.bi_pericia_tudo_n02'
+                                              objeto = 'rj-smfp-dev.dashboard_ergon_pericia_medica_subggc.bi_pericia_licenca_original'
                                               and dt_remocao is null
                                               and dt_criacao < DATETIME_SUB(CURRENT_DATETIME(), INTERVAL 30 DAY)
                                             ) AS BKPS
@@ -66,5 +66,6 @@ IF table_existe THEN
     END IF;
   END IF;
 END IF
+
 
 
