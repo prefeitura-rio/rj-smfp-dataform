@@ -1,4 +1,5 @@
-config { type: "operations" }
+config { type: "operations",
+        tags: ["BACKUP"] }
 
 DECLARE prefix STRING;           -- prefixo de data adicionado na tabela de backup
 DECLARE bkp_para_excluir STRING; -- nome da tabela de backup que deve ser excluida
