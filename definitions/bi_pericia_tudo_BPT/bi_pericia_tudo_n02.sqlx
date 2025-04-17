@@ -1,9 +1,10 @@
 config {
-    type: "table",
-    name: "bi_pericia_tudo_n02",
-    tags: ["EXEC"],
-    dependencies: ["BPT_backup_nxx", "BPT_etp04_grupopericia_tmp"],
-    description: "Tabela que junta todos e setores e suas respectivas secretarias observando o intervalo de tempo de suas existencias"
+    type: "table"
+    , name: "bi_pericia_tudo_n02"
+    , tags: ["EXEC"]
+    , dependOnDependencyAssertions: true
+    , dependencies: ["BPT_backup_nxx", "BPT_etp04_grupopericia_tmp"]
+    , description: "Tabela que junta todos e setores e suas respectivas secretarias observando o intervalo de tempo de suas existencias"
 }
 
 SELECT 
