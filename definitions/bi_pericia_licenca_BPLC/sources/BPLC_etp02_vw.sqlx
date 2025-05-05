@@ -1,0 +1,22 @@
+config {
+    type: "view",
+    tags: ["BPLC"],
+    name: "BPLC_etp02_vw_tmp",
+    description: ""
+}
+WITH AUX as (
+    SELECT *
+        except(DTATEND, DTINI,DTFIM),
+        PARSE_DATE('%Y-%m-%d', DTATEND) as DTATEND,
+        PARSE_DATE('%Y-%m-%d', DTINI) as DTINI,
+        PARSE_DATE('%Y-%m-%d', DTFIM) as DTFIM,
+        DATE_DIFF(PARSE_DATE('%Y-%m-%d', DTFIM), PARSE_DATE('%Y-%m-%d', DTINI), DAY) AS DIAS
+    FROM ${ref("BPLC_etp01_vw_tmp")}
+)
+
+SELECT *
+       except(DTATEND, DTINI,DTFIM),
+       DTATEND,
+       DTINI,
+       DTFIM
+FROM AUX

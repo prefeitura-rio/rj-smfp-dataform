@@ -1,7 +1,7 @@
 config {
     type: "table"
     , name: "bi_pericia_licenca_original_2"
-    , tags: ["EXEC"]
+    , tags: ["EXEC", "BPLO"]
     , dependencies: ["BPLO_backup_nxx", "BPLO_etp05_vw_tmp"]
     , description: ""
 }
@@ -19,7 +19,7 @@ SELECT
     ORGAO,
     cast(DTINI_LOTACAO AS STRING) AS DTINI_LOTACAO,
     cast(DTFIM_LOTACAO AS STRING) AS DTFIM_LOTACAO,
-    CAST(ROUND(VALOR, 2) AS FLOAT64) as valor,
+    CAST(ROUND(VALOR, 2) AS FLOAT64) as VALOR,
     TIPO_ATENDIMENTO,
     SIGLA,
     TIPO_PERICIA,

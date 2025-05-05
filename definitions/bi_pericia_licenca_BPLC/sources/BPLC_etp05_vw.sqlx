@@ -1,0 +1,77 @@
+config {
+    type: "view",
+    tags: ["BPLC"],
+    name: "BPLC_etp05_vw_tmp",
+    description: ""
+}
+
+WITH base as (
+  SELECT DISTINCT pericia_geral.NUMFUNC,
+                  pericia_geral.NUMVINC,
+                  pericia_geral.CARGO,
+                  P.dtini,
+                  C.cargo_padronizado,
+                  C.categoria,
+                  C.subcategoria,
+                  C.CARGO_PRIVATIVOS,
+                  C.CARGO_PRIVATIVOS_SUB
+  FROM (SELECT NUMFUNC, NUMVINC, CARGO, DATE(DTINI) AS DTINI, EMP_CODIGO
+        from ${ref("BPLC_etp04_vw_tmp")}) pericia_geral
+    LEFT JOIN (select numfunc, NUMVINC, EMP_CODIGO, CARGO, max(dtini) as dtini
+               from `rj-smfp.recursos_humanos_ergon_staging.provimento`
+               group by 1,2,3,4) P	
+      ON  cast(pericia_geral.NUMFUNC as string) = cast(P.NUMFUNC as string) 
+      AND cast(pericia_geral.NUMVINC as string) = cast(P.NUMVINC  as string) 
+      AND cast(P.EMP_CODIGO as int64) = cast(pericia_geral.EMP_CODIGO as int64)
+      --AND cast(p.dtini as date) >= cast(pericia_geral.DTINI as date)
+    LEFT JOIN `rj-smfp-dev.dashboard_ergon_folha_subggc.cargos_depara` C
+      ON C.CARGO = P.CARGO
+  WHERE CARGO_PADRONIZADO is not null
+  ),
+
+base2 as (
+SELECT  numfunc,
+        numvinc,
+        cargo,
+      -- dtini,
+        cargo_padronizado,
+        categoria,
+        subcategoria,
+        CARGO_PRIVATIVOS,
+        CARGO_PRIVATIVOS_SUB
+FROM (SELECT  numfunc,
+              numvinc,
+              cargo,
+              cargo_padronizado,
+              dtini,
+              categoria,
+              subcategoria,
+              CARGO_PRIVATIVOS,
+              CARGO_PRIVATIVOS_SUB,
+              MAX(dtini) OVER (PARTITION BY numfunc, numvinc) AS max_dtini
+      FROM (SELECT  numfunc,
+                    numvinc,
+                    cargo,
+                    dtini,
+                    cargo_padronizado,
+                    categoria,
+                    subcategoria,
+                    CARGO_PRIVATIVOS,
+                    CARGO_PRIVATIVOS_SUB
+            FROM base
+            ) AS t
+        ) AS t1
+WHERE dtini = max_dtini
+ORDER BY numfunc, numvinc
+)
+
+SELECT A.*,
+        B.cargo_padronizado,
+        B.categoria,
+        B.subcategoria,
+        B.CARGO_PRIVATIVOS,
+        B.CARGO_PRIVATIVOS_SUB
+FROM ${ref("BPLC_etp04_vw_tmp")} A
+  LEFT JOIN base2 B ON
+    A.NUMFUNC = B.NUMFUNC
+    AND A.NUMVINC = B.NUMVINC

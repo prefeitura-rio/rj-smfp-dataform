@@ -1,0 +1,14 @@
+config {
+    type: "table"
+    , name: "bi_pericia_licenca_juntas_2"
+    , tags: ["EXEC", "BPLJ"]
+    , dependencies: ["BPLJ_backup_nxx"]
+    , description: ""
+}
+
+  SELECT 
+    * 
+  FROM ${ref("bi_pericia_tudo_n02")}
+  WHERE 
+    GRUPO_PERICIA_DESC LIKE 'LM%'
+    AND TIPO_ATENDIMENTO = 'JUNTA'

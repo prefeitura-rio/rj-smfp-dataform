@@ -1,0 +1,14 @@
+config {
+    type: "view",
+    tags: ["BPLC"],
+    name: "BPLC_etp04_vw_tmp",
+    description: ""
+}
+
+SELECT 
+     A.*, 
+     A.VALOR * INFLA.inflacao_acumulado AS VALOR_CORRIGIDO_IPCA
+from ${ref("BPLC_etp03_vw_tmp")} A
+  LEFT JOIN `rj-smfp.dashboard_ergon_folha_subggc.tabela_de_infla_correta` INFLA
+    ON  EXTRACT(MONTH FROM A.DTINI) = EXTRACT(MONTH FROM INFLA.ano)
+    and EXTRACT(YEAR FROM A.DTINI) = EXTRACT(YEAR FROM INFLA.ano)

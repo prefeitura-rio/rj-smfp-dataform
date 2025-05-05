@@ -1,5 +1,6 @@
 config {
     type: "view",
+    tags: ["BPLO"],
     name: "BPLO_etp03_vw_tmp",
     description: "Agrupa e identifica períodos contínuos de licenças médicas por matrícula, acumulando a duração total de afastamentos válidos e atribuindo identificadores únicos a cada sequência de licença com base em regras de continuidade, tipo de perícia e resultado anterior"
 }

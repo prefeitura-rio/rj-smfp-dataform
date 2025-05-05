@@ -1,5 +1,6 @@
 config {
     type: "view",
+    tags: ["BPLO"],
     name: "BPLO_etp01_vw_tmp",
     description: "Busca informações detalhadas sobre licenças médicas de funcionários, combinando dados de prontuário médico, vínculos empregatícios e resultados de perícias realizadas a partir de 1º de janeiro de 2017."
 }
