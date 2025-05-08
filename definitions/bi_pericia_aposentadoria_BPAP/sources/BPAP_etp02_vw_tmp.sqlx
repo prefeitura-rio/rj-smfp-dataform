@@ -1,0 +1,12 @@
+config {
+    type: "view",
+    tags: ["BPAP"],
+    name: "BPAP_etp02_vw_tmp",
+    description: ""
+}
+
+
+SELECT count(ID_JUNTA) as peritos_por_junta,
+       ID_JUNTA
+FROM  ${ref("BPAP_etp01_vw_tmp")}
+GROUP BY 2 

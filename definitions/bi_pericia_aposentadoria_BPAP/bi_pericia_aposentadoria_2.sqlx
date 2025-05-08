@@ -1,0 +1,13 @@
+config {
+    type: "table"
+    , name: "bi_pericia_aposentadoria_2"
+    , tags: ["EXEC", "BPAP"]
+    , dependencies: ["BPAP_backup_nxx"]
+    , description: ""
+}
+
+
+SELECT
+    *
+FROM
+    ${ref("BPAP_etp04_vw_tmp")}

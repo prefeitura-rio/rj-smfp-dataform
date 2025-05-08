@@ -1,0 +1,9 @@
+config {
+        type: "operations",
+        tags: ["CLEANER"],
+        dependencies: ["bi_pericia_aposentadoria_original_2"]
+}
+
+DROP VIEW IF EXISTS `rj-smfp-dev.dashboard_ergon_pericia_medica_subggc.BPAO_etp01_vw_tmp`;
+DROP VIEW IF EXISTS `rj-smfp-dev.dashboard_ergon_pericia_medica_subggc.BPAO_etp02_vw_tmp`;
+DROP VIEW IF EXISTS `rj-smfp-dev.dashboard_ergon_pericia_medica_subggc.BPAO_etp03_vw_tmp`;

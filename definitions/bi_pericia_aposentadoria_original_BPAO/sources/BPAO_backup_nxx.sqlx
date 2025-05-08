@@ -1,0 +1,71 @@
+config { type: "operations",
+        tags: ["BACKUP"] }
+
+DECLARE prefix STRING;           -- prefixo de data adicionado na tabela de backup
+DECLARE bkp_para_excluir STRING; -- nome da tabela de backup que deve ser excluida
+DECLARE table_existe BOOL;       -- variavel de flag controla a execução do backup caso não exista a tabela original
+DECLARE backup_existe BOOL;      -- variavel de flag controla a remoção dos backups antigos
+
+SET table_existe = EXISTS (
+    SELECT 1
+    FROM `rj-smfp-dev.dashboard_ergon_pericia_medica_subggc.INFORMATION_SCHEMA.TABLES`
+    WHERE table_name = 'bi_pericia_aposentadoria_original_2');
+
+IF table_existe THEN
+  SET prefix = FORMAT_DATETIME('%Y%m%d%H%M', DATETIME(CURRENT_DATETIME('America/Sao_Paulo')));
+
+  -- cria o backup
+  EXECUTE IMMEDIATE FORMAT("""
+    CREATE OR REPLACE TABLE `rj-smfp-dev.backup_subggc.bk_%s_bi_pericia_aposentadoria_original_2` AS
+    SELECT * FROM `rj-smfp-dev.dashboard_ergon_pericia_medica_subggc.bi_pericia_aposentadoria_original_2`
+  """, prefix);
+
+  -- registra o backup criado no controle de backups para que possa ser removido automaticamente posteriormente
+  INSERT INTO `rj-smfp-dev.objetos_auxiliares_subggc.aux_backup_control_log_n00` (objeto, copia, dt_criacao) 
+  values ('rj-smfp-dev.dashboard_ergon_pericia_medica_subggc.bi_pericia_aposentadoria_original_2',
+    concat('bk_', prefix ,'_bi_pericia_aposentadoria_original_2'), DATETIME(CURRENT_DATETIME('America/Sao_Paulo')));
+
+
+  -- Busca o registro mais antigo para eliminar o backup.
+  -- Mantem os 3 backups mais recentes
+
+  SET bkp_para_excluir = (
+                            SELECT copia FROM
+                                            (SELECT
+                                              *
+                                              , row_number() over (partition by objeto order by dt_criacao desc) rnum
+                                            FROM 
+                                              `rj-smfp-dev.objetos_auxiliares_subggc.aux_backup_control_log_n00`
+                                            WHERE
+                                              objeto = 'rj-smfp-dev.dashboard_ergon_pericia_medica_subggc.bi_pericia_aposentadoria_original_2'
+                                              and dt_remocao is null
+                                              and dt_criacao < DATETIME_SUB(CURRENT_DATETIME(), INTERVAL 1 DAY)
+                                            ) AS BKPS
+                            WHERE
+                              rnum > 3 limit 1
+                          );
+
+
+  -- drop da tabela de backup antiga caso o nome da tabela não seja null e a tabela exista no banco de dados
+  IF bkp_para_excluir IS NOT NULL THEN
+    SET backup_existe = EXISTS (
+      SELECT 1
+      FROM `rj-smfp-dev.backup_subggc.INFORMATION_SCHEMA.TABLES`
+      WHERE table_name = bkp_para_excluir
+    );
+
+    IF backup_existe THEN
+      -- Apaga a tabela de backup antiga
+      EXECUTE IMMEDIATE FORMAT('DROP TABLE rj-smfp-dev.backup_subggc.`%s`', bkp_para_excluir);
+
+      -- Atualiza a data de remocao do arquivo de backup
+      EXECUTE IMMEDIATE FORMAT("""
+        UPDATE `rj-smfp-dev.objetos_auxiliares_subggc.aux_backup_control_log_n00` 
+        SET dt_remocao = DATETIME(CURRENT_DATETIME('America/Sao_Paulo')) 
+        WHERE copia = '%s' """, bkp_para_excluir);
+    END IF;
+  END IF;
+END IF
+
+
+
