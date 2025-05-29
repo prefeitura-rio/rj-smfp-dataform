@@ -1,11 +1,13 @@
 config {
         type: "operations",
         tags: ["CLEANER"],
-        dependencies: ["bi_pericia_licenca_2"]
+        dependencies: ["bi_pericia_readaptacao_2"]
 }
 
-DROP VIEW IF EXISTS `rj-smfp-dev.dashboard_ergon_pericia_medica_subggc.BPLC_etp01_vw_tmp`;
-DROP VIEW IF EXISTS `rj-smfp-dev.dashboard_ergon_pericia_medica_subggc.BPLC_etp02_vw_tmp`;
-DROP VIEW IF EXISTS `rj-smfp-dev.dashboard_ergon_pericia_medica_subggc.BPLC_etp03_vw_tmp`;
-DROP VIEW IF EXISTS `rj-smfp-dev.dashboard_ergon_pericia_medica_subggc.BPLC_etp04_vw_tmp`;
-DROP VIEW IF EXISTS `rj-smfp-dev.dashboard_ergon_pericia_medica_subggc.BPLC_etp05_vw_tmp`;
+DROP VIEW IF EXISTS `rj-smfp-dev.dashboard_ergon_pericia_medica_subggc.BPRA_etp01_vw_tmp`;
+DROP VIEW IF EXISTS `rj-smfp-dev.dashboard_ergon_pericia_medica_subggc.BPRA_etp02_vw_tmp`;
+DROP VIEW IF EXISTS `rj-smfp-dev.dashboard_ergon_pericia_medica_subggc.BPRA_etp03_vw_tmp`;
+DROP VIEW IF EXISTS `rj-smfp-dev.dashboard_ergon_pericia_medica_subggc.BPRA_etp04_vw_tmp`;
+DROP VIEW IF EXISTS `rj-smfp-dev.dashboard_ergon_pericia_medica_subggc.BPRA_etp05_vw_tmp`;
+DROP VIEW IF EXISTS `rj-smfp-dev.dashboard_ergon_pericia_medica_subggc.BPRA_etp06_vw_tmp`;
+DROP VIEW IF EXISTS `rj-smfp-dev.dashboard_ergon_pericia_medica_subggc.BPRA_etp07_vw_tmp`;

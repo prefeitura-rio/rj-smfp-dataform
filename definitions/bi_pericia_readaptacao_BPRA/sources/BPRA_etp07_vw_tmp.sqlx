@@ -1,0 +1,18 @@
+config {
+    type: "view",
+    name: "BPRA_etp07_vw_tmp",
+    description: ""
+}
+
+select 
+      A.*,
+      B.cargo_padronizado,
+      B.categoria,
+      B.subcategoria,
+      B.CARGO_PRIVATIVOS,
+      B.CARGO_PRIVATIVOS_SUB
+from ${ref("BPRA_etp04_vw_tmp")} A
+   left join ${ref("BPRA_etp06_vw_tmp")} B
+      on A.MATRICULA = b.MATRICULA
+
+

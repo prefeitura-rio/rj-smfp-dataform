@@ -1,0 +1,31 @@
+config {
+    type: "view",
+    name: "BPRA_etp05_vw_tmp",
+    description: ""
+}
+
+select distinct
+        A.NUMFUNC,
+        V.NUMVINC,
+        A.MATRICULA,
+        P.dtini,
+        C.cargo_padronizado,
+        C.categoria,
+        C.subcategoria,
+        C.CARGO_PRIVATIVOS,
+        C.CARGO_PRIVATIVOS_SUB
+FROM ${ref("BPRA_etp04_vw_tmp")}  A
+    LEFT JOIN (SELECT numfunc, numero as numvinc, matric, emp_codigo
+                FROM `rj-smfp.recursos_humanos_ergon_staging.vinculo` ) V
+        ON  cast(A.NUMFUNC as string) = cast(V.numfunc as string)
+        AND cast(A.MATRICULA as string) = cast(V.matric as string)
+    LEFT JOIN (select numfunc, NUMVINC, EMP_CODIGO, CARGO, max(dtini) as dtini
+                from `rj-smfp.recursos_humanos_ergon_staging.provimento`
+                group by 1,2,3,4) P	
+        ON  cast(A.NUMFUNC as string) = cast(P.NUMFUNC as string) 
+        AND cast(V.NUMVINC as string) = cast(P.NUMVINC  as string) 
+        AND cast(P.EMP_CODIGO as int64) = cast(A.EMP_CODIGO as int64)
+        --AND cast(p.dtini as date) >= cast(pericia_geral.DTINI as date)
+    LEFT JOIN `rj-smfp-dev.dashboard_ergon_folha_subggc.cargos_depara` C
+        ON C.CARGO = P.CARGO
+where CARGO_PADRONIZADO is not null

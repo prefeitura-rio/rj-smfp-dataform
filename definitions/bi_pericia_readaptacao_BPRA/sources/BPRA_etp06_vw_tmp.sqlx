@@ -1,0 +1,39 @@
+config {
+    type: "view",
+    name: "BPRA_etp06_vw_tmp",
+    description: ""
+}
+
+   SELECT   numfunc,
+            numvinc,
+            MATRICULA,
+            -- dtini,
+            cargo_padronizado,
+            categoria,
+            subcategoria,
+            CARGO_PRIVATIVOS,
+            CARGO_PRIVATIVOS_SUB
+   FROM (SELECT   numfunc,
+                  numvinc,
+                  MATRICULA,
+                  cargo_padronizado,
+                  dtini,
+                  categoria,
+                  subcategoria,
+                  CARGO_PRIVATIVOS,
+                  CARGO_PRIVATIVOS_SUB,
+                  MAX(dtini) OVER (PARTITION BY numfunc, numvinc) AS max_dtini
+         FROM (SELECT   numfunc,
+                        numvinc,
+                        MATRICULA,
+                        dtini,
+                        cargo_padronizado,
+                        categoria,
+                        subcategoria,
+                        CARGO_PRIVATIVOS,
+                        CARGO_PRIVATIVOS_SUB
+               FROM ${ref("BPRA_etp05_vw_tmp")}
+               ) AS t
+         ) AS t1
+WHERE dtini = max_dtini
+order by numfunc, numvinc

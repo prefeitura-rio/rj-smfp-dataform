@@ -1,0 +1,48 @@
+config {
+    type: "view",
+    name: "BPRO_etp01_readaptacao_vw_tmp",
+    description: ""
+}
+
+SELECT 
+    DISTINCT 
+    V.id_funcionario AS NUMFUNC --VINCULOS
+    , V.id_vinculo AS NUMERO --VINCULOS
+    , V.id_matricula_vinculo AS MATRIC
+    , V.data_vacancia AS DTVAC    
+    , S.id_secretaria AS CODIGO_SEC --HSETOR_
+    , S1.sigla AS SIGLA_SEC --HSETOR_
+    , P.id_setor AS CODIGO_SETOR --PROVIMENTOS_EV
+    , S.sigla AS SIGLA_SETOR --HSETOR_
+    , S.nome AS NOME_SETOR --HSETOR_
+    , P.data_inicio AS DTINI_LOTACAO
+    , COALESCE(P.data_fim, current_date('America/Sao_Paulo')) AS DTFIM_LOTACAO
+    , C.NOME
+FROM `rj-smfp.recursos_humanos_ergon.vinculo` V
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon.funcionario` FC ON V.id_funcionario = FC.id_vinculo
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon.provimento` P ON 
+        (
+            V.id_funcionario = P.id_funcionario
+            AND V.id_vinculo = P.id_vinculo
+            AND P.empresa_vinculo = V.id_empresa
+        )
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon.setor` S ON
+        (
+            S.id_setor = P.id_setor
+            AND S.id_empresa = V.id_empresa
+            AND S.data_fim IS NULL
+        )
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon.setor` S1 ON
+        (
+            S.id_secretaria = S1.id_setor
+            AND S1.data_fim IS NULL
+            AND S1.id_empresa = S.id_empresa
+        )
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon.cargo` C ON C.id_cargo = P.id_cargo
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica.designacoes_ev` D ON
+        (   
+            V.id_funcionario = D.numfunc
+            AND V.id_vinculo = D.numvinc
+        )
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon.setor` H ON D.setor = H.id_setor
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica.funcoes_ev` FU ON D.funcao = FU.funcao

@@ -1,0 +1,19 @@
+config {
+    type: "view",
+    name: "BPRA_etp03_vw_tmp",
+    description: ""
+}
+
+WITH CONTADOR AS (
+   select count(ID_JUNTA) as peritos_por_junta,
+       ID_JUNTA
+   from  ${ref("BPRA_etp02_vw_tmp")}
+   group by 2 
+)
+
+SELECT distinct
+   A.*, --except(peritos_por_junta)
+   B.peritos_por_junta
+FROM  ${ref("BPRA_etp02_vw_tmp")} A
+   left join CONTADOR B
+      on A.ID_JUNTA = B.ID_JUNTA

@@ -1,0 +1,9 @@
+config {
+    type: "table"
+    , name: "bi_pericia_readaptacao_2"
+    , tags: ["EXEC", "BPRA"]
+    , dependencies: ["BPRA_backup_nxx"]
+    , description: ""
+}
+
+SELECT * FROM ${ref("BPRA_etp07_vw_tmp")}
