@@ -1,0 +1,6 @@
+config {
+    type: "view",
+    name: "BPRO_etp01_readaptacao_vw_tmp",
+    description: ""
+}
+
