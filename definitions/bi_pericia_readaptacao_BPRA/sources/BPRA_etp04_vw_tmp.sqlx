@@ -8,11 +8,12 @@ select distinct
    A.*,
    C.nome
 from ${ref("BPRA_etp03_vw_tmp")}  A
-   LEFT JOIN `rj-smfp.recursos_humanos_ergon_staging.vinculo` V
-      ON A.MATRICULA = V.matric
-   LEFT JOIN `rj-smfp.recursos_humanos_ergon_staging.provimento` P
-      ON  V.NUMFUNC = P.NUMFUNC
-      AND V.NUMERO = P.NUMVINC
-      AND P.EMP_CODIGO = V.EMP_CODIGO
-   LEFT JOIN `rj-smfp.recursos_humanos_ergon_staging.cargo` C
-      ON C.CARGO = P.CARGO
+   LEFT JOIN `rj-smfp.recursos_humanos_ergon.vinculo` V
+      ON A.MATRICULA = V.id_matricula_vinculo
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon.provimento` P ON 
+        (
+            V.id_funcionario = P.id_funcionario
+            AND V.id_vinculo = P.id_vinculo
+            AND P.empresa_vinculo = V.id_empresa
+        )
+   LEFT JOIN `rj-smfp.recursos_humanos_ergon.cargo` C ON C.id_cargo = P.id_cargo

@@ -41,4 +41,5 @@ SELECT
     , DTFIM_LOTACAO
     , GRUPAMENTO_CID
     , CRM
+    , CAST(TEMPO_READ AS INT64) AS TEMPO_READ
 FROM ${ref("BPRO_etp03_readaptacao_vw_tmp")}

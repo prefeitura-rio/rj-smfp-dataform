@@ -4,7 +4,7 @@ config {
     description: ""
 }
 
-select 
+SELECT 
     DISTINCT
     VW.chave AS CHAVEPRONT --ERGON.PRONTUARIO --ATENCAO! essa variavel faz duplicar
     , J.ID_JUNTA
@@ -30,7 +30,7 @@ select
     , D.DESCRICAO AS DECISAO_PHOMOLOGADOR_DESC
     , J.JUSTIFICATIVA AS PHOMOLOGADOR_JUSTIFICATIVA
     , RJ.CRM AS PERITO_HOMOLOGADOR_CRM --se for necessario tem tambem ID_RESULTJUNTA
-    , M.NOME AS PERITO_HOMOLOGADOR_NOME
+    , M1.NOME AS PERITO_HOMOLOGADOR_NOME
     , V.data_posse AS DTPOSSE
     , V.data_vacancia AS DTVAC
     , V.id_empresa AS EMP_CODIGO
@@ -67,25 +67,25 @@ select
     M.CRM,
     -- TEMPO DE READAPTAÇÃO
     REGEXP_SUBSTR(J.JUSTIFICATIVA, '[123456789]') TEMPO_READ
-    FROM 
-        `rj-smfp.recursos_humanos_ergon_pericia_medica.tpmrj_pm_vwtpconclper` VW
-        LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica.prontuario` P ON VW.chave = P.chave
-        LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica.erg_pm_pront_med` PM ON P.chave = PM.chavepront
-        LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica.medicos` M ON PM.crm = M.crm
-        LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica.exames` E ON P.sigla = E.sigla
-        LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica.erg_pm_grupoexame` G ON REGEXP_REPLACE(E.grupoexame, r'\.\d+', '') = G.grupoexame
-        LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica.tpmrj_pm_periciasjunta` PJ ON P.CHAVE = PJ.chavepront
-        LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica.tpmrj_pm_juntas` J ON PJ.id_junta = J.id_junta
-        LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica.tpmrj_pm_resultjunta` RJ ON J.id_junta = RJ.id_junta
-        LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica.medicos` M1 ON RJ.crm = M1.crm
-        LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica.erg_pm_decisao` D ON RJ.decisao = D.decisao
-        LEFT JOIN `rj-smfp.recursos_humanos_ergon.vinculo` V ON V.id_matricula_vinculo = VW.matricula
-        LEFT JOIN `rj-smfp.recursos_humanos_ergon.funcionario` F ON F.id_vinculo = V.id_funcionario
-        LEFT JOIN ${ref("BPRO_etp01_readaptacao_vw_tmp")} PR
-            ON VW.matricula = PR.MATRIC
-            AND (CAST(VW.dtatend AS DATE) >= PR.DTINI_LOTACAO and CAST(VW.dtatend AS DATE) <= PR.DTFIM_LOTACAO )
-    WHERE
-        VW.DTATEND >= '2017-01-01'
-        and VW.SIGLAEXAME2 LIKE '%READAP%'
-        and VW.NOMEGRUPO LIKE '%READAP%'
-    ORDER BY P.NUMFUNC
+FROM 
+    `rj-smfp.recursos_humanos_ergon_pericia_medica.tpmrj_pm_vwtpconclper` VW
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica.prontuario` P ON VW.chave = P.chave
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica.erg_pm_pront_med` PM ON P.chave = PM.chavepront
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica.medicos` M ON PM.crm = M.crm
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica.exames` E ON P.sigla = E.sigla
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica.erg_pm_grupoexame` G ON REGEXP_REPLACE(E.grupoexame, r'\.\d+', '') = G.grupoexame
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica.tpmrj_pm_periciasjunta` PJ ON P.chave = PJ.chavepront
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica.tpmrj_pm_juntas` J ON PJ.id_junta = J.id_junta
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica.tpmrj_pm_resultjunta` RJ ON J.id_junta = RJ.id_junta
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica.medicos` M1 ON RJ.crm = M1.crm
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon_pericia_medica.erg_pm_decisao` D ON RJ.decisao = D.decisao
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon.vinculo` V ON V.id_matricula_vinculo = VW.matricula
+    LEFT JOIN `rj-smfp.recursos_humanos_ergon.funcionario` F ON F.id_vinculo = V.id_funcionario
+    LEFT JOIN ${ref("BPRO_etp01_readaptacao_vw_tmp")} PR
+        ON VW.matricula = PR.MATRIC
+        AND (CAST(VW.dtatend AS DATE) >= PR.DTINI_LOTACAO and CAST(VW.dtatend AS DATE) <= PR.DTFIM_LOTACAO )
+WHERE
+    VW.DTATEND >= '2017-01-01'
+    and VW.SIGLAEXAME2 LIKE '%READAP%'
+    and VW.NOMEGRUPO LIKE '%READAP%'
+ORDER BY P.NUMFUNC
