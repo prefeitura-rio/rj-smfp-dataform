@@ -14,4 +14,4 @@ SELECT  *,
           WHEN (DTFIM_VANTAGEM is null OR DTFIM_VANTAGEM >= CURRENT_DATE()) and DTAPOSENT is  null and DTVAC is null THEN 1
           ELSE 0
         end as vigente
-from ${ref("BPRVO_etp01_vw_tmp")}
+from ${ref("BPRV_etp01_vw_tmp")}
