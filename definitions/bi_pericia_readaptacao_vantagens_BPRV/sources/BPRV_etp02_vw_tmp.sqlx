@@ -1,0 +1,17 @@
+config {
+    type: "view",
+    tags: ["BPRV"],
+    name: "BPRV_etp02_vw_tmp",
+    description: ""
+}
+
+SELECT  *,
+        CASE
+            WHEN (DTFIM_VANTAGEM is null) and INFO <= CURRENT_DATE() and DTAPOSENT is  null and DTVAC is null THEN 1
+            ELSE 0
+        end as vencido,
+        CASE
+          WHEN (DTFIM_VANTAGEM is null OR DTFIM_VANTAGEM >= CURRENT_DATE()) and DTAPOSENT is  null and DTVAC is null THEN 1
+          ELSE 0
+        end as vigente
+from ${ref("BPRVO_etp01_vw_tmp")}

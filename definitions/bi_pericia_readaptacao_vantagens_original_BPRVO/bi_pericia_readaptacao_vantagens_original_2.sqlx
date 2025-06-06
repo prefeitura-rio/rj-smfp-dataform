@@ -1,0 +1,16 @@
+config {
+    type: "table"
+    , name: "bi_pericia_readaptacao_vantagens_original_2"
+    , tags: ["EXEC", "BPRVO"]
+    , dependencies: ["BPRVO_backup_nxx"]
+    , description: ""
+}
+
+SELECT 
+    *
+FROM
+    ${ref("BPRVO_etp01_vw_tmp")}
+WHERE
+    DTINI_VANTAGEM >= '2017-01-01'
+ORDER BY
+    NUMFUNC, DTINI_VANTAGEM ASC

@@ -1,0 +1,37 @@
+config {
+    type: "view",
+    tags: ["BPRV"],
+    name: "BPRV_etp04_vw_tmp",
+    description: ""
+}
+
+WITH ANOS AS (
+    SELECT *,
+           CASE
+               WHEN DTFIM_VANTAGEM IS NULL THEN TRUNC(DATE_DIFF(INFO, DTINI_VANTAGEM, YEAR))
+               ELSE TRUNC(DATE_DIFF(DTFIM_VANTAGEM, DTINI_VANTAGEM, YEAR))
+           END TEMPO_ANOS
+    FROM ${ref("BPRV_etp03_vw_tmp")}
+),
+DURACAO AS (
+    SELECT *,
+           CASE
+               WHEN DTFIM_VANTAGEM IS NULL AND TEMPO_ANOS = 0 THEN TRUNC(DATE_DIFF(INFO, DTINI_VANTAGEM, MONTH))
+               WHEN DTFIM_VANTAGEM IS NOT NULL AND TEMPO_ANOS = 0 THEN TRUNC(DATE_DIFF(DTFIM_VANTAGEM, DTINI_VANTAGEM, MONTH))
+               ELSE TEMPO_ANOS
+           END TEMPO
+    FROM ANOS
+)
+SELECT *,
+       CASE
+          WHEN TEMPO = 0 THEN '0 dias'
+          WHEN TEMPO = 1 THEN '1 ano'
+          WHEN TEMPO = 2 THEN '2 anos'
+          WHEN TEMPO = 3 THEN '3 anos'
+          WHEN TEMPO = 4 THEN '4 anos'
+          WHEN TEMPO = 5 THEN '5 anos'
+          WHEN TEMPO = 6 THEN '6 meses'
+          WHEN TEMPO = 7 THEN '7 meses'
+          ELSE 'VERIFICAR'
+       END DURACAO_READ
+FROM DURACAO

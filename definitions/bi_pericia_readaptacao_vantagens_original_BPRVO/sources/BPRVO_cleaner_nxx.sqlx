@@ -1,0 +1,7 @@
+config {
+        type: "operations",
+        tags: ["CLEANER"],
+        dependencies: ["bi_pericia_readaptacao_vantagens_original_2"]
+}
+
+DROP VIEW IF EXISTS `rj-smfp-dev.dashboard_ergon_pericia_medica_subggc.BPRVO_etp01_vw_tmp`;

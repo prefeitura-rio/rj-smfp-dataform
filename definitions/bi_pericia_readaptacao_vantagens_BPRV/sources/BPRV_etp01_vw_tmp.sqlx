@@ -1,0 +1,29 @@
+config {
+    type: "view",
+    tags: ["BPRV"],
+    name: "BPRV_etp01_vw_tmp",
+    description: ""
+}
+
+SELECT distinct
+  A.*,
+  B.MIN_DTATEND_,
+  --DATE_ADD(A.DTINI_VANTAGEM, INTERVAL 4 MONTH),
+  --DATE_ADD(A.DTINI_VANTAGEM, INTERVAL -4 MONTH),
+  B.DECISAO_PERITOJUNTA,
+  B.TEMPO_READ,
+  B.GRUPAMENTO_CID,
+  B.COD_CID1,
+  B.cargo_padronizado,
+  B.CARGO_PRIVATIVOS,
+  B.ORGAO,
+  B.SEXO,
+  B.IDADE
+FROM ${ref("bi_pericia_readaptacao_vantagens_original_2")}  A
+  LEFT JOIN  ${ref("bi_pericia_readaptacao_2")} B ON
+    A.NUMFUNC = B.NUMFUNC --Antes era matricula
+WHERE
+  DATE_ADD(A.DTINI_VANTAGEM, INTERVAL 4 MONTH) >= B.MIN_DTATEND_
+  AND DATE_ADD(A.DTINI_VANTAGEM, INTERVAL -6 MONTH) <=  B.MIN_DTATEND_
+ORDER BY
+  DTINI_VANTAGEM, numfunc

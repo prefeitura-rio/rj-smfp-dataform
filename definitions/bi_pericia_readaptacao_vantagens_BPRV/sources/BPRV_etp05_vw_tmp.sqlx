@@ -1,0 +1,132 @@
+config {
+    type: "view",
+    tags: ["BPRV"],
+    name: "BPRV_etp05_vw_tmp",
+    description: ""
+}
+
+WITH AUX AS (
+select distinct
+      *,
+      CASE
+          WHEN (DTINI_VANTAGEM <= '2017-01-01'
+           AND (DTFIM_VANTAGEM >= '2017-01-01' or DTFIM_VANTAGEM is null))
+           AND (DTAPOSENT IS NULL OR DTAPOSENT >= '2017-01-01')
+           AND (DTVAC IS NULL OR DTVAC >= '2017-01-01')
+          THEN 1
+          ELSE 0
+      END AS READAPTADOS_JAN2017,
+
+      CASE
+          WHEN (DTINI_VANTAGEM <= '2018-01-01'
+           AND (DTFIM_VANTAGEM >= '2018-01-01' or DTFIM_VANTAGEM is null))
+           AND (DTAPOSENT IS NULL OR DTAPOSENT >= '2018-01-01')
+           AND (DTVAC IS NULL OR DTVAC >= '2018-01-01')
+          THEN 1
+          ELSE 0
+      END AS READAPTADOS_JAN2018,
+
+      CASE
+          WHEN (DTINI_VANTAGEM <= '2019-01-01'
+           AND (DTFIM_VANTAGEM >= '2019-01-01' or DTFIM_VANTAGEM is null))
+           AND (DTAPOSENT IS NULL OR DTAPOSENT >= '2019-01-01')
+           AND (DTVAC IS NULL OR DTVAC >= '2019-01-01')
+          THEN 1
+          ELSE 0
+      END AS READAPTADOS_JAN2019,
+
+      CASE
+          WHEN (DTINI_VANTAGEM <= '2020-01-01'
+           AND (DTFIM_VANTAGEM >= '2020-01-01' or DTFIM_VANTAGEM is null))
+           AND (DTAPOSENT IS NULL OR DTAPOSENT >= '2020-01-01')
+           AND (DTVAC IS NULL OR DTVAC >= '2020-01-01')
+          THEN 1
+          ELSE 0
+      END AS READAPTADOS_JAN2020,
+
+      CASE
+          WHEN (DTINI_VANTAGEM <= '2021-01-01'
+           AND (DTFIM_VANTAGEM >= '2021-01-01' or DTFIM_VANTAGEM is null))
+           AND (DTAPOSENT IS NULL OR DTAPOSENT >= '2021-01-01')
+           AND (DTVAC IS NULL OR DTVAC >= '2021-01-01')
+          THEN 1
+          ELSE 0
+      END AS READAPTADOS_JAN2021,
+
+      CASE
+          WHEN (DTINI_VANTAGEM <= '2022-01-01'
+           AND (DTFIM_VANTAGEM >= '2022-01-01' or DTFIM_VANTAGEM is null))
+           AND (DTAPOSENT IS NULL OR DTAPOSENT >= '2022-01-01')
+           AND (DTVAC IS NULL OR DTVAC >= '2022-01-01')
+          THEN 1
+          ELSE 0
+      END AS READAPTADOS_JAN2022,
+
+      CASE
+          WHEN (DTINI_VANTAGEM <= '2023-01-01'
+           AND (DTFIM_VANTAGEM >= '2023-01-01' or DTFIM_VANTAGEM is null))
+           AND (DTAPOSENT IS NULL OR DTAPOSENT >= '2023-01-01')
+           AND (DTVAC IS NULL OR DTVAC >= '2023-01-01')
+          THEN 1
+          ELSE 0
+      END AS READAPTADOS_JAN2023,
+
+      CASE
+          WHEN (DTINI_VANTAGEM <= '2024-01-01'
+           AND (DTFIM_VANTAGEM >= '2024-01-01' or DTFIM_VANTAGEM is null))
+           AND (DTAPOSENT IS NULL OR DTAPOSENT >= '2024-01-01')
+           AND (DTVAC IS NULL OR DTVAC >= '2024-01-01')
+          THEN 1
+          ELSE 0
+      END AS READAPTADOS_JAN2024,
+      CASE
+          WHEN (DTINI_VANTAGEM <= '2025-01-01'
+           AND (DTFIM_VANTAGEM >= '2025-01-01' or DTFIM_VANTAGEM is null))
+           AND (DTAPOSENT IS NULL OR DTAPOSENT >= '2025-01-01')
+           AND (DTVAC IS NULL OR DTVAC >= '2025-01-01')
+          THEN 1
+          ELSE 0
+      END AS READAPTADOS_JAN2025
+
+FROM ${ref("BPRV_etp04_vw_tmp")}
+)
+
+SELECT DISTINCT
+      *,
+      CASE
+          WHEN READAPTADOS_JAN2017 = 1 THEN NUMFUNC
+          ELSE NULL
+      END NUMFUNC_JAN2017,
+      CASE
+          WHEN READAPTADOS_JAN2018 = 1 THEN NUMFUNC
+          ELSE NULL
+      END NUMFUNC_JAN2018,
+      CASE
+          WHEN READAPTADOS_JAN2019 = 1 THEN NUMFUNC
+          ELSE NULL
+      END NUMFUNC_JAN2019,
+      CASE
+          WHEN READAPTADOS_JAN2020 = 1 THEN NUMFUNC
+          ELSE NULL
+      END NUMFUNC_JAN2020,
+      CASE
+          WHEN READAPTADOS_JAN2021 = 1 THEN NUMFUNC
+          ELSE NULL
+      END NUMFUNC_JAN2021,
+      CASE
+          WHEN READAPTADOS_JAN2022 = 1 THEN NUMFUNC
+          ELSE NULL
+      END NUMFUNC_JAN2022,
+      CASE
+          WHEN READAPTADOS_JAN2023 = 1 THEN NUMFUNC
+          ELSE NULL
+      END NUMFUNC_JAN2023,
+      CASE
+          WHEN READAPTADOS_JAN2024 = 1 THEN NUMFUNC
+          ELSE NULL
+      END NUMFUNC_JAN2024,
+      CASE
+          WHEN READAPTADOS_JAN2025 = 1 THEN NUMFUNC
+          ELSE NULL
+      END NUMFUNC_JAN2025
+FROM AUX

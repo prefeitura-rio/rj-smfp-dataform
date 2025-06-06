@@ -1,0 +1,26 @@
+config {
+    type: "view",
+    tags: ["BPRVO"],
+    name: "BPRVO_etp01_vw_tmp",
+    description: "Monta base dos servidores readaptados"
+}
+
+SELECT
+    DISTINCT
+    CAST(A.id_funcionario AS INT64) AS NUMFUNC, 
+    A.nome_vantagem AS VANTAGEM, 
+    A.data_inicio  AS DTINI_VANTAGEM,  
+    A.data_final  AS DTFIM_VANTAGEM,
+    PARSE_DATE('%d/%m/%Y', TRIM(A.informacao_atributo)) AS INFO,
+    B.id_matricula_vinculo AS MATRIC,
+    B.data_aposentadoria AS DTAPOSENT,
+    B.data_vacancia AS DTVAC,
+    ROW_NUMBER() OVER (PARTITION BY A.id_funcionario ORDER BY A.data_inicio ASC) AS OCORRENCIAS_READAPTACAO
+FROM  `rj-smfp.recursos_humanos_ergon.vantagens` A
+    left join `rj-smfp.recursos_humanos_ergon.vinculo` B ON
+        (
+            A.id_funcionario = B.id_funcionario
+            AND A.id_vinculo = B.id_vinculo
+        )
+WHERE A.nome_vantagem = 'READAPTACAO'
+ORDER BY 1, 3 asc

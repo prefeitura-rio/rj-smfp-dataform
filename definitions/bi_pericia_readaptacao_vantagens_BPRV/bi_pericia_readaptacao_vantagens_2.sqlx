@@ -1,0 +1,9 @@
+config {
+    type: "table"
+    , name: "bi_pericia_readaptacao_vantagens_2"
+    , tags: ["EXEC", "BPRV"]
+    , dependencies: ["BPRV_backup_nxx"]
+    , description: ""
+}
+
+SELECT * FROM ${ref("BPRV_etp05_vw_tmp")}
