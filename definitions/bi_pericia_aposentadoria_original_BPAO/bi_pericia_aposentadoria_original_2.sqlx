@@ -41,4 +41,5 @@ SELECT
     , DTFIM_LOTACAO
     , GRUPAMENTO_CID
     , CRM
+    , MIN_DTATEND_
 FROM ${ref("BPAO_etp03_vw_tmp")}
